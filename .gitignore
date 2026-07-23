@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.idea
+.DS_Store
+*.sln
+*.sw?
+wwwroot
+obj
+bin
+*.bat
