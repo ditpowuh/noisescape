@@ -1,0 +1,61 @@
+.container {
+  display: inline-block;
+}
+
+.main {
+  background: rgba(255, 255, 255, 0.25);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  padding: 1.25em;
+  width: 100%;
+  border-radius: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 0.25em solid rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.main .name {
+  transform: translateY(5%);
+}
+
+.main .emoji {
+  font-size: 1.5em;
+}
+
+.main > div {
+  display: inline-block;
+}
+
+.other {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.other .clickable {
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 0.75em;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+
+.other .clickable .icon {
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em;
+  border-radius: 50%;
+}
+
+.other .clickable .text {
+  font-size: 0.75em;
+  transform: translateY(-5%);
+}
