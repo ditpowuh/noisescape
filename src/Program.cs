@@ -170,7 +170,7 @@ class Program {
         outputDevice.Play();
 
         while (outputDevice.PlaybackState == PlaybackState.Playing) {
-          Thread.Sleep(500);
+          Thread.Sleep(100);
         }
       }
     });
@@ -202,7 +202,7 @@ class Program {
               outputDevice.Stop();
               break;
             }
-            Thread.Sleep(500);
+            Thread.Sleep(100);
           }
         }
       }
