@@ -5,6 +5,8 @@ import "./global.css";
 
 import Wave from "react-wavify";
 
+import AddSoundPanel from "@/components/AddSoundPanel";
+import MainButtons from "@/components/MainButtons";
 import DeviceSelector from "@/components/DeviceSelector";
 import Sound from "@/components/Sound";
 
@@ -62,6 +64,8 @@ export default function App() {
         <div onClick={trigger}>TEST</div>
         <div onClick={trigger2}>TEST2</div>
       </div>
+      <MainButtons/>
+      <AddSoundPanel/>
     </>
   );
 }

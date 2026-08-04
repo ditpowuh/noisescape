@@ -97,6 +97,7 @@ class Program {
           if (filePath != null) {
             var responseData = new {
               name = "SelectedFile",
+              filePath = filePath,
               fileName = Path.GetFileName(filePath)
             };
 

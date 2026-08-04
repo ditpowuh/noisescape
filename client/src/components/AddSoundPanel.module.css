@@ -1,0 +1,156 @@
+.scrim {
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+}
+
+.panel {
+  position: fixed;
+  background: #222222;
+  top: 50%;
+  left: 50%;
+  width: 50em;
+  transform: translate(-50%, -50%);
+  padding: 2em;
+  border-radius: 1em;
+  z-index: 1;
+}
+
+.panel .label {
+  margin-bottom: 0.5em;
+}
+
+.panel .start {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2em;
+  margin-bottom: 2rem;
+}
+
+.panel .columns {
+  display: flex;
+  justify-content: space-between;
+  gap: 4em;
+}
+
+.panel .columns > div {
+  flex: 1;
+  flex-basis: 0;
+  min-width: 0;
+}
+
+.panel .columns > div:nth-of-type(2) {
+  text-align: right;
+}
+
+.panel .columns .section {
+  margin-bottom: 2em;
+}
+
+.panel .columns .volume {
+  font-size: 1.5em;
+}
+
+.panel .end {
+  position: absolute;
+  bottom: 2em;
+}
+
+.fileselect {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.filename {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filepath {
+  margin-top: 0.5em;
+  height: 1em;
+}
+
+.closebutton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 4em;
+  height: 4em;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.basicbutton {
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.actionbutton {
+  background: #333333;
+  font-size: 1.25em;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.25s;
+}
+
+.actionbutton:first-of-type {
+  margin-right: 0.5rem;
+}
+
+.actionbutton:hover {
+  filter: drop-shadow(0 0.25em 0.25em rgba(0, 0, 0, 0.25));
+}
+
+.required {
+  color: #ff0000;
+  margin-left: 0.25em;
+}
+
+.textinput {
+  padding: 1em;
+  border-radius: 0.5em;
+}
+
+.slider {
+  width: 100%;
+}
+
+.emojidisplay {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1em;
+  gap: 0.5em;
+}
+
+.emoji {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25em;
+  font-size: 2em;
+  height: 2em;
+  width: 2em;
+}
+
+.emoji.selected {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.unavailable {
+  cursor: not-allowed;
+}
