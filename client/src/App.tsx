@@ -15,6 +15,8 @@ import external from "@/lib/external";
 export default function App() {
   const theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
+  const [addSoundPanelActive, setAddSoundPanelActive] = useState<boolean>(false);
+
   const [inputDevices, setInputDevices] = useState<string[]>([]);
   const [outputDevices, setOutputDevices] = useState<string[]>([]);
 
@@ -31,6 +33,13 @@ export default function App() {
     external.sendCommand({
       name: "StopPreview",
       message: "test"
+    });
+  }
+
+  const stopPreviewAfterTask = (task: () => void) => {
+    task();
+    external.sendCommand({
+      name: "StopPreview"
     });
   }
 
@@ -64,8 +73,10 @@ export default function App() {
         <div onClick={trigger}>TEST</div>
         <div onClick={trigger2}>TEST2</div>
       </div>
-      <MainButtons/>
-      <AddSoundPanel/>
+      <MainButtons openAddSoundPanel={() => setAddSoundPanelActive(true)}/>
+      {addSoundPanelActive && (
+        <AddSoundPanel closeSoundPanel={() => stopPreviewAfterTask(() => setAddSoundPanelActive(false))}/>
+      )}
     </>
   );
 }

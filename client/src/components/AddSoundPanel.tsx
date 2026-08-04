@@ -11,7 +11,11 @@ import external from "@/lib/external";
 
 import type {EmojiClickData} from "emoji-picker-react";
 
-export default function AddSoundPanel() {
+interface AddSoundPanelProps {
+  closeSoundPanel: () => void;
+}
+
+export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
   const [file, setFile] = useState<string>("");
   const [filePath, setFilePath] = useState<string>("");
   const [emoji, setEmoji] = useState<string | null>(null);
@@ -70,7 +74,7 @@ export default function AddSoundPanel() {
             Add a sound
           </div>
           <div>
-            <button className={styles.closebutton}><CloseIcon/></button>
+            <button className={styles.closebutton} onClick={closeSoundPanel}><CloseIcon/></button>
           </div>
         </div>
         <div className={styles.columns}>

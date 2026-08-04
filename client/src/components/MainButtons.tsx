@@ -2,10 +2,14 @@ import styles from "./MainButtons.module.css";
 
 import PlusIcon from "@/assets/Plus.svg?react";
 
-export default function MainButtons() {
+interface MainButtonsProps {
+  openAddSoundPanel: () => void;
+}
+
+export default function MainButtons({openAddSoundPanel}: MainButtonsProps) {
   return (
     <div className={styles.bar}>
-      <button className={styles.button}><PlusIcon/></button>
+      <button className={styles.button} onClick={openAddSoundPanel}><PlusIcon/></button>
     </div>
   );
 }
