@@ -1,14 +1,14 @@
-import styles from "./Sound.module.css";
+import styles from "./SoundTrigger.module.css";
 
 import AudioIcon from "@/assets/Audio.svg?react";
 import PinIcon from "@/assets/Pin.svg?react";
 
-interface SoundProps {
+interface SoundTriggerProps {
   name: string;
   emoji: string;
 }
 
-export default function Sound({name, emoji}: SoundProps) {
+export default function SoundTrigger({name, emoji}: SoundTriggerProps) {
   return (
     <div className={styles.container}>
       <div className={`${styles.main} unselectable`}>
