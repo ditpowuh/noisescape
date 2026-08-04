@@ -21,6 +21,10 @@
   margin: 1em 0;
 }
 
+.selector:focus {
+  outline: none;
+}
+
 .selector option {
   font-family: sans-serif;
   font-weight: bold;

@@ -18,7 +18,8 @@ export default defineConfig({
         tsconfigPath: "./tsconfig.app.json",
       },
       overlay: {
-        initialIsOpen: false
+        initialIsOpen: false,
+        position: "tl"
       }
     })
   ],
@@ -30,6 +31,6 @@ export default defineConfig({
   },
   build: {
     outDir: path.resolve(__dirname, "../src/Resources/wwwroot"),
-    emptyOutDir: true,
-  },
+    emptyOutDir: true
+  }
 });
