@@ -25,6 +25,7 @@ class Program {
   static OrderedDictionary<string, MMDevice> outputDevices = new OrderedDictionary<string, MMDevice>();
 
   static IWavePlayer currentlyPlayingDevice;
+  static CancellationTokenSource previewCTS;
 
   static Settings settings;
 
@@ -177,28 +178,63 @@ class Program {
   static void PlayPreview(string filePath, float volume = 1f) {
     StopPreview();
 
+    previewCTS = new CancellationTokenSource();
+    CancellationToken token = previewCTS.Token;
+
     Task.Run(() => {
-      using (var audioFile = new AudioFileReader(filePath))
-      using (var outputDevice = new WasapiOut()) {
-        currentlyPlayingDevice = outputDevice;
+      try {
+        using (var audioFile = new AudioFileReader(filePath))
+        using (var outputDevice = new WasapiOut()) {
+          lock (enumerator) {
+            if (token.IsCancellationRequested) {
+              return;
+            }
+            currentlyPlayingDevice = outputDevice;
+          }
 
-        audioFile.Volume = volume;
-        outputDevice.Init(audioFile);
-        outputDevice.Play();
+          audioFile.Volume = volume;
+          outputDevice.Init(audioFile);
+          outputDevice.Play();
 
-        while (outputDevice.PlaybackState == PlaybackState.Playing) {
-          Thread.Sleep(500);
+          while (outputDevice.PlaybackState == PlaybackState.Playing) {
+            if (token.IsCancellationRequested) {
+              outputDevice.Stop();
+              break;
+            }
+            Thread.Sleep(500);
+          }
         }
-
-        currentlyPlayingDevice = null;
       }
-    });
+      catch (Exception exeption) {
+        if (debugMode) {
+          Console.WriteLine($"Error with previewing audio: {exeption.Message}");
+        }
+      }
+      finally {
+        lock (enumerator) {
+          WasapiOut device = currentlyPlayingDevice as WasapiOut;
+          if (device != null && device == currentlyPlayingDevice) {
+            currentlyPlayingDevice = null;
+          }
+        }
+      }
+    }, token);
   }
 
   static void StopPreview() {
-    currentlyPlayingDevice?.Stop();
-    currentlyPlayingDevice?.Dispose();
-    currentlyPlayingDevice = null;
+    try {
+      previewCTS?.Cancel();
+    }
+    catch {}
+
+    if (currentlyPlayingDevice != null) {
+      try {
+        currentlyPlayingDevice.Stop();
+        currentlyPlayingDevice.Dispose();
+      }
+      catch {}
+      currentlyPlayingDevice = null;
+    }
   }
 
   static OrderedDictionary<string, MMDevice> GetInputDevices() {
