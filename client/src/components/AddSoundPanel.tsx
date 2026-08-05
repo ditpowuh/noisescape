@@ -20,6 +20,7 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
   const [filePath, setFilePath] = useState<string>("");
   const [emoji, setEmoji] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(1);
+  const [soundName, setSoundName] = useState<string>("");
 
   const selectEmoji = (emojiObject: EmojiClickData) => {
     setEmoji(emojiObject.emoji);
@@ -47,7 +48,22 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
   }
 
   const addSound = () => {
-
+    if (file === "" || filePath === "" || soundName === "") {
+      return;
+    }
+    external.sendCommand({
+      name: "AddSound",
+      sound: {
+        path: filePath,
+        name: soundName,
+        emoji: emoji,
+        volume: volume
+      }
+    });
+    external.sendCommand({
+      name: "StopPreview"
+    });
+    closeSoundPanel();
   }
 
   useEffect(() => {
@@ -70,9 +86,7 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
       <div className={styles.scrim}></div>
       <div className={styles.panel}>
         <div className={styles.start}>
-          <div>
-            Add a sound
-          </div>
+          <div>Add a sound</div>
           <div>
             <button className={styles.closebutton} onClick={closeSoundPanel}><CloseIcon/></button>
           </div>
@@ -94,7 +108,7 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
             <div className={styles.section}>
               <div className={styles.label}>Sound Name<span className={styles.required}>*</span></div>
               <div>
-                <input className={styles.textinput} type="text"/>
+                <input className={styles.textinput} type="text" placeholder="Sound Name" maxLength={255} value={soundName} onChange={(event) => setSoundName(event.target.value)}/>
               </div>
             </div>
             <div className={styles.section}>
@@ -105,8 +119,12 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
               </div>
             </div>
             <div className={styles.end}>
-              <button className={styles.actionbutton}>Save Sound</button>
-              <button className={clsx(styles.actionbutton, (file === "" || filePath === "") && styles.unavailable)} onClick={playPreview}>Preview</button>
+              <button className={clsx(styles.actionbutton, (file === "" || filePath === "" || soundName === "") && styles.unavailable)} onClick={addSound}>
+                Save Sound
+              </button>
+              <button className={clsx(styles.actionbutton, (file === "" || filePath === "") && styles.unavailable)} onClick={playPreview}>
+                Preview
+              </button>
             </div>
           </div>
           <div>
