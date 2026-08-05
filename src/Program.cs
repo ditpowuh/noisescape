@@ -57,10 +57,13 @@ class Program {
             inputDevices = inputDevices.Keys.ToList(),
             outputDevices = outputDevices.Keys.ToList(),
             inputIndex = settings.inputDevice.index,
-            outputIndex = settings.outputDevice.index
+            outputIndex = settings.outputDevice.index,
+            sounds = sounds.Values.Cast<Sound>().ToList()
           };
 
-          string dataMessage = JsonSerializer.Serialize(responseData);
+          string dataMessage = JsonSerializer.Serialize(responseData, new JsonSerializerOptions {
+            IncludeFields = true
+          });
           window.SendWebMessage(dataMessage);
           break;
         }
@@ -107,7 +110,13 @@ class Program {
           break;
         }
         case "PlayPreview": {
-          PlayPreview((string)data["path"], (float)data["volume"]);
+          if (data["path"] != null) {
+            PlayPreview((string)data["path"], (float)data["volume"]);
+          }
+          if (data["id"] != null) {
+            Sound sound = sounds[(Guid)data["id"]];
+            PlayPreview(sound.filePath, sound.volume);
+          }
           break;
         }
         case "StopPreview": {
@@ -118,15 +127,28 @@ class Program {
           var soundData = data["sound"];
 
           Sound sound = new Sound();
-          sound.filePath = (string)soundData["path"];
           sound.name = (string)soundData["name"];
-          sound.emoji = (string)soundData["emoji"];
-          sound.pinned = (bool)soundData["pinned"];
           sound.volume = (float)soundData["volume"];
+          sound.filePath = (string)soundData["path"];
 
+          sound.emoji = (string)soundData["emoji"];
+          if (sound.emoji == "null") {
+            sound.emoji = null;
+          }
 
           sounds.Add(sound.id, sound);
           Storage.SaveSounds(sounds);
+
+          var responseData = new {
+            name = "AddSound",
+            soundGuid = sound.id,
+            soundName = sound.name,
+            soundEmoji = sound.emoji,
+            soundPinned = sound.pinned
+          };
+
+          string dataMessage = JsonSerializer.Serialize(responseData);
+          window.SendWebMessage(dataMessage);
           break;
         }
         default: {
