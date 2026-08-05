@@ -52,7 +52,7 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
         <select ref={inputSelectRef} className={styles.selector} onChange={selectInputDevice}>
           {
             inputDevices.map((inputDevice, index) => (
-              <option key={`${inputDevice}-${index}`}>{inputDevice}</option>
+              <option key={`${inputDevice}~${index}`}>{inputDevice}</option>
             ))
           }
         </select>
@@ -62,7 +62,7 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
         <select ref={outputSelectRef} className={styles.selector} onChange={selectOutputDevice}>
           {
             outputDevices.map((outputDevice, index) => (
-              <option key={`${outputDevice}-${index}`}>{outputDevice}</option>
+              <option key={`${outputDevice}~${index}`}>{outputDevice}</option>
             ))
           }
         </select>

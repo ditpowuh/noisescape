@@ -1,5 +1,6 @@
 .container {
   display: inline-block;
+  position: relative;
 }
 
 .main {
@@ -8,7 +9,7 @@
   justify-content: center;
   align-items: center;
   gap: 0.5em;
-  padding: 1.25em;
+  padding: 1em 4em;
   width: 100%;
   border-radius: 0.5em;
   margin-bottom: 0.5em;
@@ -28,34 +29,18 @@
   display: inline-block;
 }
 
-.other {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5em;
-}
-
-.other .clickable {
-  background: rgba(255, 255, 255, 0.1);
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.5em 0.75em;
+.preview {
+  background: rgba(255, 255, 255, 0.25);
+  position: absolute;
+  font-size: 0.5em;
+  bottom: 1rem;
+  left: 0.25rem;
   border-radius: 0.5em;
+  padding: 0.5em 1em;
   cursor: pointer;
+  transition: box-shadow 0.25s;
 }
 
-.other .clickable .icon {
-  background: rgba(255, 255, 255, 0.1);
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5em;
-  border-radius: 50%;
-}
-
-.other .clickable .text {
-  font-size: 0.75em;
-  transform: translateY(-5%);
+.preview:hover {
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.25);
 }
