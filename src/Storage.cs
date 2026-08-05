@@ -30,8 +30,9 @@ static class Storage {
     }
   }
 
-  public static void SaveSounds(List<Sound> listOfSounds) {
+  public static void SaveSounds(OrderedDictionary<Guid, Sound> sounds) {
     Directory.CreateDirectory(appDataFolder);
+    List<Sound> listOfSounds = sounds.Values.Cast<Sound>().ToList();
     string jsonData = JsonSerializer.Serialize(listOfSounds, new JsonSerializerOptions {
       IncludeFields = true,
       WriteIndented = true
@@ -39,16 +40,21 @@ static class Storage {
     File.WriteAllText(Path.Combine(appDataFolder, "sounds.json"), jsonData);
   }
 
-  public static List<Sound> LoadSounds() {
+  public static OrderedDictionary<Guid, Sound> LoadSounds() {
     try {
       string jsonData = File.ReadAllText(Path.Combine(appDataFolder, "sounds.json"));
-      return JsonSerializer.Deserialize<List<Sound>>(jsonData, new JsonSerializerOptions {
+      List<Sound> listOfSounds = JsonSerializer.Deserialize<List<Sound>>(jsonData, new JsonSerializerOptions {
         IncludeFields = true
       });
+      OrderedDictionary<Guid, Sound> loadedSounds = new OrderedDictionary<Guid, Sound>();
+      foreach (Sound sound in listOfSounds) {
+        loadedSounds.Add(sound.id, sound);
+      }
+      return loadedSounds;
     }
     catch (Exception exception) {
       Console.WriteLine($"Failed to load sounds: {exception.Message}");
-      return new List<Sound>();
+      return new OrderedDictionary<Guid, Sound>();
     }
   }
 

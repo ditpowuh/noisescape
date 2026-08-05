@@ -29,7 +29,7 @@ class Program {
 
   static Settings settings;
 
-  static List<Sound> sounds = new List<Sound>();
+  static OrderedDictionary<Guid, Sound> sounds = new OrderedDictionary<Guid, Sound>();
 
   [STAThread]
   static void Main(string[] args) {
@@ -124,8 +124,8 @@ class Program {
           sound.pinned = (bool)soundData["pinned"];
           sound.volume = (float)soundData["volume"];
 
-          sounds.Add(sound);
 
+          sounds.Add(sound.id, sound);
           Storage.SaveSounds(sounds);
           break;
         }

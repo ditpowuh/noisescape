@@ -20,7 +20,7 @@ class Sound {
   public float volume = 1f;
 
   [JsonPropertyName("id")]
-  Guid? id;
+  public Guid id;
 
   public Sound() {
     id = Guid.NewGuid();
