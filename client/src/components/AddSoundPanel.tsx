@@ -1,6 +1,9 @@
-import styles from "./AddSoundPanel.module.css";
+import styles from "./SoundPanel.module.css";
 import {useState, useEffect} from "react";
+import {useShallow} from "zustand/react/shallow";
 import clsx from "clsx";
+
+import {useSoundboardStore} from "@/stores/SoundboardStore";
 
 import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react";
 import {AutoTextSize} from "auto-text-size";
@@ -11,16 +14,14 @@ import external from "@/lib/external";
 
 import type {EmojiClickData} from "emoji-picker-react";
 
-interface AddSoundPanelProps {
-  closeSoundPanel: () => void;
-}
-
-export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
+export default function AddSoundPanel() {
   const [file, setFile] = useState<string>("");
   const [filePath, setFilePath] = useState<string>("");
   const [emoji, setEmoji] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(1);
   const [soundName, setSoundName] = useState<string>("");
+
+  const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
 
   const selectEmoji = (emojiObject: EmojiClickData) => {
     setEmoji(emojiObject.emoji);
@@ -28,6 +29,13 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
 
   const removeEmoji = () => {
     setEmoji(null);
+  }
+
+  const closePanel = () => {
+    external.sendCommand({
+      name: "StopPreview"
+    });
+    setActivePanel(null);
   }
 
   const openFileSelect = () => {
@@ -63,7 +71,7 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
     external.sendCommand({
       name: "StopPreview"
     });
-    closeSoundPanel();
+    closePanel();
   }
 
   useEffect(() => {
@@ -88,7 +96,7 @@ export default function AddSoundPanel({closeSoundPanel}: AddSoundPanelProps) {
         <div className={styles.start}>
           <div>Add a sound</div>
           <div>
-            <button className={styles.closebutton} onClick={closeSoundPanel}><CloseIcon/></button>
+            <button className={styles.closebutton} onClick={closePanel}><CloseIcon/></button>
           </div>
         </div>
         <div className={styles.columns}>

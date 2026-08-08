@@ -1,17 +1,17 @@
 import styles from "./SoundTrigger.module.css";
+import {useState} from "react";
+import clsx from "clsx";
 
 import external from "@/lib/external";
 
 interface SoundTriggerProps extends React.ComponentProps<"div"> {
   name: string;
   guid: string;
-  emoji: string;
+  emoji: string | null;
 }
 
 export default function SoundTrigger({name, guid, emoji, ...elementProps}: SoundTriggerProps) {
-  console.log(name)
-  console.log(guid)
-  console.log(emoji)
+  const [triggeredEffect, setTriggeredEffect] = useState<boolean>(false);
 
   const triggerPreview = () => {
     external.sendCommand({
@@ -20,9 +20,20 @@ export default function SoundTrigger({name, guid, emoji, ...elementProps}: Sound
     });
   }
 
+  const playSound = () => {
+    external.sendCommand({
+      name: "PlaySound",
+      id: guid
+    });
+    setTriggeredEffect(true);
+    setTimeout(() => {
+      setTriggeredEffect(false);
+    }, 500);
+  }
+
   return (
     <div className={styles.container}>
-      <div className={`${styles.main} unselectable`} {...elementProps}>
+      <div className={clsx(styles.main, triggeredEffect && styles.triggered, "unselectable")} onClick={playSound} {...elementProps}>
         <div className={styles.emoji}>{emoji}</div>
         <div className={styles.name}>{name}</div>
       </div>

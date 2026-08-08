@@ -144,7 +144,8 @@ class Program {
             soundGuid = sound.id,
             soundName = sound.name,
             soundEmoji = sound.emoji,
-            soundPinned = sound.pinned
+            soundPinned = sound.pinned,
+            soundVolume = sound.volume
           };
 
           string dataMessage = JsonSerializer.Serialize(responseData);

@@ -154,3 +154,7 @@
 .unavailable {
   cursor: not-allowed;
 }
+
+.danger {
+  background: #990000;
+}

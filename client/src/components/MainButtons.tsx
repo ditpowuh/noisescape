@@ -1,15 +1,16 @@
 import styles from "./MainButtons.module.css";
+import {useShallow} from "zustand/react/shallow";
+
+import {useSoundboardStore} from "@/stores/SoundboardStore";
 
 import PlusIcon from "@/assets/Plus.svg?react";
 
-interface MainButtonsProps {
-  openAddSoundPanel: () => void;
-}
+export default function MainButtons() {
+  const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
 
-export default function MainButtons({openAddSoundPanel}: MainButtonsProps) {
   return (
     <div className={styles.bar}>
-      <button className={styles.button} onClick={openAddSoundPanel}><PlusIcon/></button>
+      <button className={styles.button} onClick={() => setActivePanel("AddSound")}><PlusIcon/></button>
     </div>
   );
 }
