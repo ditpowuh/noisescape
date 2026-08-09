@@ -54,6 +54,9 @@ export default function Soundboard({theme}: SoundboardProps) {
           sound: props.sound,
           index: props.index
         });
+        external.sendCommand({
+          name: "StopPreview"
+        });
         setActivePanel("EditSound");
         break;
       }

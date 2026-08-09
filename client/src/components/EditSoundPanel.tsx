@@ -44,7 +44,8 @@ export default function EditSoundPanel() {
     }
     external.sendCommand({
       name: "PlayPreview",
-      id: currentlyEditingSound.sound.id
+      id: currentlyEditingSound.sound.id,
+      volume: currentlyEditingSound.sound.volume
     });
   }
 

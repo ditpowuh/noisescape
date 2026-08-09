@@ -115,7 +115,12 @@ class Program {
           }
           if (data["id"] != null) {
             Sound sound = sounds[(Guid)data["id"]];
-            PlayPreview(sound.filePath, sound.volume);
+            if (data["volume"] != null) {
+              PlayPreview(sound.filePath, (float)data["volume"]);
+            }
+            else {
+              PlayPreview(sound.filePath, sound.volume);
+            }
           }
           break;
         }
