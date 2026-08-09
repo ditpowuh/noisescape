@@ -184,6 +184,11 @@ class Program {
           StopAllSounds();
           break;
         }
+        case "RemoveSound": {
+          sounds.Remove((Guid)data["id"]);
+          Storage.SaveSounds(sounds);
+          break;
+        }
         case "ShowSoundAsFile": {
           Sound sound = sounds[(Guid)data["id"]];
           Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");

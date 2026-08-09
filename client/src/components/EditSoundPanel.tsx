@@ -14,7 +14,7 @@ import type {Sound} from "@/types/sound";
 import type {EmojiClickData} from "emoji-picker-react";
 
 export default function EditSoundPanel() {
-  const [updateSound] = useSoundboardStore(useShallow((state) => [state.updateSound]));
+  const [updateSound, removeSound] = useSoundboardStore(useShallow((state) => [state.updateSound, state.removeSound]));
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
   const [currentlyEditingSound, setCurrentlyEditingSound, updateCurrentlyEditingSoundAttribute] = useSoundboardStore(useShallow((state) => [state.currentlyEditingSound, state.setCurrentlyEditingSound, state.updateCurrentlyEditingSoundAttribute]));
 
@@ -49,7 +49,7 @@ export default function EditSoundPanel() {
     });
   }
 
-  const saveSound = () => {
+  const processSaveSound = () => {
     if (currentlyEditingSound === null) {
       return;
     }
@@ -57,18 +57,19 @@ export default function EditSoundPanel() {
       name: "UpdateSound",
       sound: currentlyEditingSound.sound
     });
-    updateSound(currentlyEditingSound.sound, currentlyEditingSound.index);
+    updateSound(currentlyEditingSound.sound, currentlyEditingSound.sound.id);
     closePanel();
   }
 
-  const deleteSound = () => {
+  const processRemoveSound = () => {
     if (currentlyEditingSound === null) {
       return;
     }
     external.sendCommand({
-      name: "DeleteSound",
+      name: "RemoveSound",
       id: currentlyEditingSound.sound.id
     });
+    removeSound(currentlyEditingSound.sound.id);
     closePanel();
   }
 
@@ -103,12 +104,12 @@ export default function EditSoundPanel() {
             </div>
             <div className={styles.section}>
               <div className={styles.label}>Danger Zone</div>
-              <button className={clsx(styles.actionbutton, styles.danger)} onClick={deleteSound}>
-                Delete Sound
+              <button className={clsx(styles.actionbutton, styles.danger)} onClick={processRemoveSound}>
+                Remove Sound
               </button>
             </div>
             <div className={styles.end}>
-              <button className={clsx(styles.actionbutton, currentlyEditingSound.sound.name === "" && styles.unavailable)} onClick={saveSound}>
+              <button className={clsx(styles.actionbutton, currentlyEditingSound.sound.name === "" && styles.unavailable)} onClick={processSaveSound}>
                 Save Sound
               </button>
               <button className={styles.actionbutton} onClick={playPreview}>
