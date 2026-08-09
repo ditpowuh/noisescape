@@ -33,6 +33,14 @@ class Program {
   static List<IWavePlayer> activeSoundPlayers = new List<IWavePlayer>();
   static CancellationTokenSource soundPlaybackCTS = new CancellationTokenSource();
 
+  static WasapiCapture microphoneCapture;
+  static WasapiOut microphoneOutput;
+  static BufferedWaveProvider microphoneBuffer;
+
+  static readonly object microphonePassthroughLock = new object();
+
+  static bool microphonePassthroughEnabled = false;
+
   static Settings settings;
 
   static OrderedDictionary<Guid, Sound> sounds = new OrderedDictionary<Guid, Sound>();
@@ -66,6 +74,7 @@ class Program {
             outputDevices = outputDevices.Keys.ToList(),
             inputIndex = settings.inputDevice.index,
             outputIndex = settings.outputDevice.index,
+            passthrough = microphonePassthroughEnabled,
             sounds = sounds.Values.Cast<Sound>().ToList()
           };
 
@@ -87,6 +96,11 @@ class Program {
             deviceIndex++;
           }
           Storage.SaveSettings(settings);
+
+          if (microphonePassthroughEnabled) {
+            StopPassingMicrophone();
+            StartPassingMicrophone();
+          }
           break;
         }
         case "SelectOutputDevice": {
@@ -101,6 +115,21 @@ class Program {
             deviceIndex++;
           }
           Storage.SaveSettings(settings);
+
+          if (microphonePassthroughEnabled) {
+            StopPassingMicrophone();
+            StartPassingMicrophone();
+          }
+          break;
+        }
+        case "TogglePassthrough": {
+          microphonePassthroughEnabled = !microphonePassthroughEnabled;
+          if (microphonePassthroughEnabled) {
+            StartPassingMicrophone();
+          }
+          else {
+            StopPassingMicrophone();
+          }
           break;
         }
         case "TriggerSelect": {
@@ -390,6 +419,69 @@ class Program {
       }
       catch {}
       currentlyPlayingDevice = null;
+    }
+  }
+
+  static void StartPassingMicrophone() {
+    lock (microphonePassthroughLock) {
+      try {
+        if (!inputDevices.ContainsKey(settings.inputDevice.name) || !outputDevices.ContainsKey(settings.outputDevice.name)) {
+          return;
+        }
+
+        MMDevice inputDevice = inputDevices[settings.inputDevice.name];
+        MMDevice outputDevice = outputDevices[settings.outputDevice.name];
+
+        microphoneCapture = new WasapiCapture(inputDevice);
+
+        microphoneBuffer = new BufferedWaveProvider(microphoneCapture.WaveFormat) {
+          DiscardOnBufferOverflow = true,
+          BufferDuration = TimeSpan.FromMilliseconds(500)
+        };
+
+        microphoneCapture.DataAvailable += (s, e) => {
+          microphoneBuffer?.AddSamples(e.Buffer, 0, e.BytesRecorded);
+        };
+
+        microphoneCapture.RecordingStopped += (s, e) => {
+          if (debugMode && e.Exception != null) {
+            Console.WriteLine($"Microphone capture stopped with error: {e.Exception.Message}");
+          }
+        };
+
+        microphoneOutput = new WasapiOut(outputDevice, AudioClientShareMode.Shared, true, 50);
+        microphoneOutput.Init(microphoneBuffer);
+
+        microphoneCapture.StartRecording();
+        microphoneOutput.Play();
+      }
+      catch (Exception ex) {
+        if (debugMode) {
+          Console.WriteLine($"Error starting passthrough: {ex.Message}");
+        }
+        StopPassingMicrophone();
+      }
+    }
+  }
+
+  static void StopPassingMicrophone() {
+    lock (microphonePassthroughLock) {
+      try {
+        microphoneCapture?.StopRecording();
+      }
+      catch {}
+
+      try {
+        microphoneOutput?.Stop();
+      }
+      catch {}
+
+      microphoneCapture?.Dispose();
+      microphoneOutput?.Dispose();
+
+      microphoneCapture = null;
+      microphoneOutput = null;
+      microphoneBuffer = null;
     }
   }
 
