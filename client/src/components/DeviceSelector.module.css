@@ -8,7 +8,7 @@
   text-align: left;
 }
 
-.section > div:nth-of-type(2) {
+.section > div:nth-last-of-type(1) {
   padding-right: 2em;
   text-align: right;
 }

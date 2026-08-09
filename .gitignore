@@ -10,3 +10,4 @@ wwwroot
 obj
 bin
 *.bat
+-*
