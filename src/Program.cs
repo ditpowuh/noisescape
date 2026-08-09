@@ -152,6 +152,16 @@ class Program {
           window.SendWebMessage(dataMessage);
           break;
         }
+        case "UpdateSound": {
+          var soundData = data["sound"];
+          sounds[(Guid)soundData["id"]].name = (string)soundData["name"];
+          sounds[(Guid)soundData["id"]].emoji = (string)soundData["emoji"];
+          sounds[(Guid)soundData["id"]].pinned = (bool)soundData["pinned"];
+          sounds[(Guid)soundData["id"]].volume = (float)soundData["volume"];
+
+          Storage.SaveSounds(sounds);
+          break;
+        }
         default: {
           Console.WriteLine($"Unknown message received - {data["name"]}");
           break;

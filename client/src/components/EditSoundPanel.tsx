@@ -14,6 +14,7 @@ import type {Sound} from "@/types/sound";
 import type {EmojiClickData} from "emoji-picker-react";
 
 export default function EditSoundPanel() {
+  const [updateSound] = useSoundboardStore(useShallow((state) => [state.updateSound]));
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
   const [currentlyEditingSound, setCurrentlyEditingSound, updateCurrentlyEditingSoundAttribute] = useSoundboardStore(useShallow((state) => [state.currentlyEditingSound, state.setCurrentlyEditingSound, state.updateCurrentlyEditingSoundAttribute]));
 
@@ -51,7 +52,12 @@ export default function EditSoundPanel() {
     if (currentlyEditingSound === null) {
       return;
     }
-
+    external.sendCommand({
+      name: "UpdateSound",
+      sound: currentlyEditingSound.sound
+    });
+    updateSound(currentlyEditingSound.sound, currentlyEditingSound.index);
+    closePanel();
   }
 
   const deleteSound = () => {

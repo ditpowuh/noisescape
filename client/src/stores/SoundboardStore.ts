@@ -10,6 +10,7 @@ interface SoundboardState {
   } | null;
   activePanel: "AddSound" | "EditSound" | null;
   setSounds: (sounds: Sound[]) => void;
+  updateSound: (sound: Sound, soundIndex: number) => void;
   addSound: (sound: Sound) => void;
   setCurrentlyEditingSound: (currentlyEditingSound: {sound: Sound, index: number} | null) => void;
   updateCurrentlyEditingSoundAttribute: (changes: Partial<Sound>) => void;
@@ -23,6 +24,9 @@ export const useSoundboardStore = create<SoundboardState>((set) => ({
   setSounds: (sounds) => set({sounds}),
   addSound: (sound) => set((state) => ({
     sounds: [...state.sounds, sound]
+  })),
+  updateSound: (sound, soundIndex) => set((state) => ({
+    sounds: state.sounds.map((item, index) => soundIndex === index ? sound : item)
   })),
   setCurrentlyEditingSound: (currentlyEditingSound) => set({currentlyEditingSound}),
   updateCurrentlyEditingSoundAttribute: (changes) => set((state) => {
