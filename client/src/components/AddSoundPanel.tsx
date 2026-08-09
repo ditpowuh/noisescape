@@ -82,9 +82,6 @@ export default function AddSoundPanel() {
           setFilePath(message.filePath);
           break;
         }
-        default: {
-          break;
-        }
       }
     });
   }, []);

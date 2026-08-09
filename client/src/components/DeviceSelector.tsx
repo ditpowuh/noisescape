@@ -24,9 +24,6 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
           }
           break;
         }
-        default: {
-          break;
-        }
       }
     });
   }, []);

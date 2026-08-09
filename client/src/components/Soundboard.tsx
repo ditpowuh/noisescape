@@ -84,9 +84,6 @@ export default function Soundboard({theme}: SoundboardProps) {
           });
           break;
         }
-        default: {
-          break;
-        }
       }
     });
   }, []);

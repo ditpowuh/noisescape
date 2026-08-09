@@ -33,9 +33,6 @@ export default function App() {
           setOutputDevices(message.outputDevices);
           break;
         }
-        default: {
-          break;
-        }
       }
     });
 
