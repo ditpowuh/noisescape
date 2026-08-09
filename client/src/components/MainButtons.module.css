@@ -1,7 +1,16 @@
 .bar {
   position: fixed;
+  display: flex;
+  justify-content: space-between;
   bottom: 0;
   padding: 1em;
+  width: 100%;
+  pointer-events: none;
+}
+
+.bar .left, .bar .right {
+  display: flex;
+  gap: 0.5em;
 }
 
 .button {
@@ -13,4 +22,5 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  pointer-events: auto;
 }

@@ -27,9 +27,16 @@ class Program {
   static IWavePlayer currentlyPlayingDevice;
   static CancellationTokenSource previewCTS;
 
+  static readonly object soundPlaybackLock = new object();
+
+  static List<IWavePlayer> activeSoundPlayers = new List<IWavePlayer>();
+  static CancellationTokenSource soundPlaybackCTS = new CancellationTokenSource();
+
   static Settings settings;
 
   static OrderedDictionary<Guid, Sound> sounds = new OrderedDictionary<Guid, Sound>();
+
+  const int playbackSleepInterval = 100;
 
   [STAThread]
   static void Main(string[] args) {
@@ -167,6 +174,15 @@ class Program {
           Storage.SaveSounds(sounds);
           break;
         }
+        case "PlaySound": {
+          Sound sound = sounds[(Guid)data["id"]];
+          PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
+          break;
+        }
+        case "StopAllSounds": {
+          StopAllSounds();
+          break;
+        }
         default: {
           Console.WriteLine($"Unknown message received - {data["name"]}");
           break;
@@ -199,19 +215,103 @@ class Program {
   static void PlaySound(string deviceName, string filePath, float volume = 1f) {
     string deviceID = outputDevices[deviceName].ID;
 
+    CancellationToken token;
+    lock (soundPlaybackLock) {
+      token = soundPlaybackCTS.Token;
+    }
+
     Task.Run(() => {
-      using (var audioFile = new AudioFileReader(filePath))
-      using (var targetDevice = enumerator.GetDevice(deviceID))
-      using (var outputDevice = new WasapiOut(targetDevice, AudioClientShareMode.Shared, true, 200)) {
+      IWavePlayer? outputDevice = null;
+      AudioFileReader? audioFile = null;
+      try {
+        audioFile = new AudioFileReader(filePath);
+        MMDevice targetDevice = enumerator.GetDevice(deviceID);
+        outputDevice = new WasapiOut(targetDevice, AudioClientShareMode.Shared, true, 200);
+
+        lock (soundPlaybackLock) {
+          if (token.IsCancellationRequested) {
+            return;
+          }
+          activeSoundPlayers.Add(outputDevice);
+        }
+
         audioFile.Volume = volume;
         outputDevice.Init(audioFile);
         outputDevice.Play();
 
         while (outputDevice.PlaybackState == PlaybackState.Playing) {
-          Thread.Sleep(100);
+          if (token.IsCancellationRequested) {
+            outputDevice.Stop();
+            break;
+          }
+          Thread.Sleep(playbackSleepInterval);
         }
       }
+      finally {
+        if (outputDevice != null) {
+          lock (soundPlaybackLock) {
+            activeSoundPlayers.Remove(outputDevice);
+          }
+          outputDevice.Dispose();
+        }
+        audioFile?.Dispose();
+      }
     });
+
+    Task.Run(() => {
+      IWavePlayer? outputDevice = null;
+      AudioFileReader? audioFile = null;
+      try {
+        audioFile = new AudioFileReader(filePath);
+        outputDevice = new WasapiOut();
+
+        lock (soundPlaybackLock) {
+          if (token.IsCancellationRequested) {
+            return;
+          }
+          activeSoundPlayers.Add(outputDevice);
+        }
+
+        audioFile.Volume = volume;
+        outputDevice.Init(audioFile);
+        outputDevice.Play();
+
+        while (outputDevice.PlaybackState == PlaybackState.Playing) {
+          if (token.IsCancellationRequested) {
+            outputDevice.Stop();
+            break;
+          }
+          Thread.Sleep(playbackSleepInterval);
+        }
+      }
+      finally {
+        if (outputDevice != null) {
+          lock (soundPlaybackLock) {
+            activeSoundPlayers.Remove(outputDevice);
+          }
+          outputDevice.Dispose();
+        }
+        audioFile?.Dispose();
+      }
+    });
+  }
+
+  static void StopAllSounds() {
+    lock (soundPlaybackLock) {
+      try {
+        soundPlaybackCTS.Cancel();
+      }
+      catch {}
+
+      foreach (IWavePlayer player in activeSoundPlayers.ToArray()) {
+        try {
+          player.Stop();
+        }
+        catch {}
+      }
+      activeSoundPlayers.Clear();
+      soundPlaybackCTS = new CancellationTokenSource();
+    }
   }
 
   static void PlayPreview(string filePath, float volume = 1f) {
@@ -240,7 +340,7 @@ class Program {
               outputDevice.Stop();
               break;
             }
-            Thread.Sleep(100);
+            Thread.Sleep(playbackSleepInterval);
           }
         }
       }
