@@ -53,6 +53,9 @@ export default function EditSoundPanel() {
     if (currentlyEditingSound === null) {
       return;
     }
+    if (currentlyEditingSound.sound.name === "") {
+      return;
+    }
     external.sendCommand({
       name: "UpdateSound",
       sound: currentlyEditingSound.sound

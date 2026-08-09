@@ -1,5 +1,5 @@
 import styles from "./Soundboard.module.css";
-import {useEffect} from "react";
+import {useState, useEffect, useMemo} from "react";
 import {useShallow} from "zustand/react/shallow";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
@@ -21,12 +21,21 @@ export default function Soundboard({theme}: SoundboardProps) {
     id: "Soundboard"
   });
 
-  const [sounds, setSounds, addSound] = useSoundboardStore(useShallow((state) => [state.sounds, state.setSounds, state.addSound]));
+  const [contextSound, setContextSound] = useState<Sound | null>(null);
+
+  const [sounds, setSounds, addSound, updateSound] = useSoundboardStore(useShallow((state) => [state.sounds, state.setSounds, state.addSound, state.updateSound]));
   const [setCurrentlyEditingSound] = useSoundboardStore(useShallow((state) => [state.setCurrentlyEditingSound]));
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
 
+  const sortedSounds = useMemo(() => {
+    return [...sounds].sort((a, b) => Number(b.pinned) - Number(a.pinned));
+  }, [sounds]);
+
   const handleContextMenu = (event: React.MouseEvent, sound: Sound, index: number) => {
     event.preventDefault();
+
+    setContextSound(sound);
+
     show({
       event: event,
       props: {
@@ -47,6 +56,7 @@ export default function Soundboard({theme}: SoundboardProps) {
           name: "TogglePin",
           id: props.sound.id
         });
+        updateSound({...props.sound, pinned: !props.sound.pinned}, props.sound.id);
         break;
       }
       case "Edit": {
@@ -95,14 +105,14 @@ export default function Soundboard({theme}: SoundboardProps) {
     <>
       <div className={styles.soundboard}>
         {
-          sounds.map((sound, index) => (
-            <SoundTrigger key={`${sound.id}~${index}`} name={sound.name} emoji={sound.emoji} guid={sound.id} onContextMenu={(event) => handleContextMenu(event, sound, index)}/>
+          sortedSounds.map((sound, index) => (
+            <SoundTrigger key={`${sound.id}~${index}`} name={sound.name} emoji={sound.emoji} pinned={sound.pinned} guid={sound.id} onContextMenu={(event) => handleContextMenu(event, sound, index)}/>
           ))
         }
       </div>
       <ContextMenu className={styles.contextmenu} id="Soundboard" animation={false} theme={theme}>
         <ContextItem id="Pin" onClick={handleContextMenuItemClick}>
-          Pin Sound
+          {contextSound?.pinned ? "Unpin Sound" : "Pin Sound"}
         </ContextItem>
         <ContextItem id="Edit" onClick={handleContextMenuItemClick}>
           Edit Sound

@@ -194,6 +194,12 @@ class Program {
           Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");
           break;
         }
+        case "TogglePin": {
+          Sound sound = sounds[(Guid)data["id"]];
+          sound.pinned = !sound.pinned;
+          Storage.SaveSounds(sounds);
+          break;
+        }
         default: {
           Console.WriteLine($"Unknown message received - {data["name"]}");
           break;

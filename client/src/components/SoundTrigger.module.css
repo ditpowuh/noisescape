@@ -9,7 +9,7 @@
   justify-content: center;
   align-items: center;
   gap: 0.5em;
-  padding: 1em 4em;
+  padding: 1em;
   width: 12em;
   height: 4em;
   border-radius: 0.5em;
@@ -23,6 +23,8 @@
 
 .main .name {
   transform: translateY(5%);
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .main .emoji {
@@ -42,11 +44,25 @@
   border-radius: 0.5em;
   padding: 0.5em 1em;
   cursor: pointer;
+  backdrop-filter: blur(0.25em);
   transition: box-shadow 0.25s;
 }
 
 .preview:hover {
   box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.25);
+}
+
+.pin {
+  background: rgba(255, 255, 255, 1);
+  color: #000000;
+  position: absolute;
+  top: -0.5em;
+  left: -0.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25em;
+  border-radius: 50%;
 }
 
 .triggered {
