@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Drawing;
+using System.Diagnostics;
 
 using Photino.NET;
 using Photino.NET.Server;
@@ -181,6 +182,11 @@ class Program {
         }
         case "StopAllSounds": {
           StopAllSounds();
+          break;
+        }
+        case "ShowSoundAsFile": {
+          Sound sound = sounds[(Guid)data["id"]];
+          Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");
           break;
         }
         default: {

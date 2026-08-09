@@ -62,7 +62,7 @@ export default function Soundboard({theme}: SoundboardProps) {
       }
       case "Location": {
         external.sendCommand({
-          name: "FindSoundAsFile",
+          name: "ShowSoundAsFile",
           id: props.sound.id
         });
         break;
