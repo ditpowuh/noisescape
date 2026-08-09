@@ -1,0 +1,39 @@
+import styles from "./PassthroughToggle.module.css";
+import {useState, useEffect} from "react";
+
+import MicrophoneOnIcon from "@/assets/MicrophoneOn.svg?react";
+import MicrophoneOffIcon from "@/assets/MicrophoneOff.svg?react";
+
+import external from "@/lib/external";
+
+
+export default function PassthroughToggle() {
+  const [passthrough, setPassthrough] = useState<boolean>(false);
+
+  const toggle = () => {
+    external.sendCommand({
+      name: "TogglePassthrough"
+    });
+    setPassthrough((state) => !state);
+  }
+
+  useEffect(() => {
+    external.receiveCommand((message) => {
+      switch (message.name) {
+        case "InitialLoad": {
+          setPassthrough(message.passthrough);
+          break;
+        }
+      }
+    });
+  }, []);
+
+  return (
+    <div>
+      <div>Send microphone input to virtual cable</div>
+      <button className={styles.button} title={passthrough ? "Enabled" : "Disabled"} onClick={toggle} style={{color: passthrough ? "#00de00" : "#de0000"}}>
+        {passthrough ? <MicrophoneOnIcon/> : <MicrophoneOffIcon/>}
+      </button>
+    </div>
+  );
+}

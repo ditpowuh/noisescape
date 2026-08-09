@@ -13,6 +13,7 @@ import AddSoundPanel from "@/components/AddSoundPanel";
 import EditSoundPanel from "@/components/EditSoundPanel";
 import MainButtons from "@/components/MainButtons";
 import DeviceSelector from "@/components/DeviceSelector";
+import PassthroughToggle from "@/components/PassthroughToggle";
 import Soundboard from "@/components/Soundboard";
 
 import external from "@/lib/external";
@@ -48,6 +49,7 @@ export default function App() {
           <Wave fill={theme === "dark" ? "#222222" : "#ffffff"} paused={false} options={{height: 50, amplitude: 25, speed: 0.125, points: 3}}/>
         </div>
         <DeviceSelector inputDevices={inputDevices} outputDevices={outputDevices}/>
+        <PassthroughToggle/>
         <Soundboard theme={theme}/>
       </div>
       <MainButtons/>
