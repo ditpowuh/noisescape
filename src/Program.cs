@@ -11,6 +11,8 @@ using Photino.NET.Server;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 
+using Velopack;
+
 namespace Noisescape;
 
 class Program {
@@ -49,6 +51,8 @@ class Program {
 
   [STAThread]
   static void Main(string[] args) {
+    VelopackApp.Build().Run();
+
     PhotinoServer.CreateStaticFileServer(args, out string baseUrl).RunAsync();
     string appUrl = debugMode ? "http://localhost:5173" : $"{baseUrl}/index.html";
 

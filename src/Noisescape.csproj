@@ -15,6 +15,7 @@
     <PackageReference Include="Photino.NET" Version="4.0.16"/>
     <PackageReference Include="Photino.NET.Server" Version="4.0.12"/>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2"/>
+    <PackageReference Include="Velopack" Version="1.2.0"/>
   </ItemGroup>
 
   <ItemGroup>
