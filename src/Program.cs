@@ -51,22 +51,22 @@ class Program {
 
   [STAThread]
   static void Main(string[] args) {
-    if (!debugMode) {
-      VelopackApp.Build().Run();
-    }
+    VelopackApp.Build().Run();
 
     PhotinoServer.CreateStaticFileServer(args, out string baseUrl).RunAsync();
     string appUrl = debugMode ? "http://localhost:5173" : $"{baseUrl}/index.html";
 
     PhotinoWindow window = new PhotinoWindow();
 
-    window.SetTitle("Noisescape (Soundboard)");
+    window.SetNotificationsEnabled(false);
+    window.SetTitle(string.Empty);
     window.SetSize(1600, 900);
     window.Center();
     window.SetContextMenuEnabled(false);
     window.SetIconFile(debugMode ? "../client/public/Icon.ico" : "Icon.ico");
 
     window.WindowCreated += (sender, e) => {
+      window.SetTitle("Noisescape (Soundboard)");
       window.SetMinSize(1280, 720);
     };
 
