@@ -1,6 +1,7 @@
 import styles from "./App.module.css";
 import {useState, useEffect} from "react";
 import {useShallow} from "zustand/react/shallow";
+import {useMediaQuery} from "usehooks-ts";
 
 import "react-contexify/dist/ReactContexify.css";
 import "./global.css";
@@ -19,7 +20,8 @@ import Soundboard from "@/components/Soundboard";
 import external from "@/lib/external";
 
 export default function App() {
-  const theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  const darkTheme = useMediaQuery("(prefers-color-scheme: dark)");
+  const theme = darkTheme ? "dark" : "light";
 
   const [activePanel] = useSoundboardStore(useShallow((state) => [state.activePanel]));
 

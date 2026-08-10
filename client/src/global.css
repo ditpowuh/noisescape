@@ -14,6 +14,10 @@ body {
   margin: 0;
 }
 
+select, input[type="text"] {
+  border: none;
+}
+
 .unselectable {
   user-drag: none;
   -webkit-user-drag: none;

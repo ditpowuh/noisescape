@@ -4,7 +4,7 @@
 }
 
 .main {
-  background: rgba(255, 255, 255, 0.25);
+  background: #ffffff;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -36,7 +36,7 @@
 }
 
 .preview {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.1);
   position: absolute;
   font-size: 0.5em;
   bottom: 1rem;
@@ -53,8 +53,8 @@
 }
 
 .pin {
-  background: rgba(255, 255, 255, 1);
-  color: #000000;
+  background: #000000;
+  color: #ffffff;
   position: absolute;
   top: -0.5em;
   left: -0.5em;
@@ -67,4 +67,19 @@
 
 .triggered {
   outline: 0.1em solid rgba(0, 255, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .main {
+    background: #444444;
+  }
+
+  .preview {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .pin {
+    background: #ffffff;
+    color: #000000;
+  }
 }
