@@ -31,6 +31,7 @@ export default defineConfig({
   },
   build: {
     outDir: path.resolve(__dirname, "../src/Resources/wwwroot"),
-    emptyOutDir: true
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 1000
   }
 });

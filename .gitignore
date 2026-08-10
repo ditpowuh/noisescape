@@ -9,5 +9,8 @@ dist-ssr
 wwwroot
 obj
 bin
+publish
+output
+releases
 *.bat
 -*
