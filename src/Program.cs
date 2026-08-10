@@ -11,7 +11,7 @@ using Photino.NET.Server;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 
-namespace NoiseScape;
+namespace Noisescape;
 
 class Program {
   #if DEBUG
@@ -54,7 +54,7 @@ class Program {
 
     PhotinoWindow window = new PhotinoWindow();
 
-    window.SetTitle("NoiseScape");
+    window.SetTitle("Noisescape");
     window.SetSize(1600, 900);
     window.Center();
     window.SetContextMenuEnabled(false);

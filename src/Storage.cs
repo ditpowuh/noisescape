@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace NoiseScape;
+namespace Noisescape;
 
 static class Storage {
 

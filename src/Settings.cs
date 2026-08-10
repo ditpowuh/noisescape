@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 
-namespace NoiseScape;
+namespace Noisescape;
 
 class Settings {
 

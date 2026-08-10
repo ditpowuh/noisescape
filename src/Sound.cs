@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json.Serialization;
 
-namespace NoiseScape;
+namespace Noisescape;
 
 class Sound {
 
