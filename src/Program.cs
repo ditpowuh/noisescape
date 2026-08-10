@@ -51,17 +51,20 @@ class Program {
 
   [STAThread]
   static void Main(string[] args) {
-    VelopackApp.Build().Run();
+    if (!debugMode) {
+      VelopackApp.Build().Run();
+    }
 
     PhotinoServer.CreateStaticFileServer(args, out string baseUrl).RunAsync();
     string appUrl = debugMode ? "http://localhost:5173" : $"{baseUrl}/index.html";
 
     PhotinoWindow window = new PhotinoWindow();
 
-    window.SetTitle("Noisescape");
+    window.SetTitle("Noisescape (Soundboard)");
     window.SetSize(1600, 900);
     window.Center();
     window.SetContextMenuEnabled(false);
+    window.SetIconFile(debugMode ? "../client/public/Icon.ico" : "Icon.ico");
 
     window.WindowCreated += (sender, e) => {
       window.SetMinSize(1280, 720);
@@ -95,6 +98,7 @@ class Program {
             IncludeFields = true
           });
           window.SendWebMessage(dataMessage);
+          window.SetTitle("Noisescape");
           break;
         }
         case "SelectInputDevice": {
