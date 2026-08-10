@@ -43,9 +43,12 @@ static class Storage {
   public static OrderedDictionary<Guid, Sound> LoadSounds() {
     try {
       string jsonData = File.ReadAllText(Path.Combine(appDataFolder, "sounds.json"));
-      List<Sound> listOfSounds = JsonSerializer.Deserialize<List<Sound>>(jsonData, new JsonSerializerOptions {
+      List<Sound>? listOfSounds = JsonSerializer.Deserialize<List<Sound>>(jsonData, new JsonSerializerOptions {
         IncludeFields = true
       });
+      if (listOfSounds == null) {
+        return new OrderedDictionary<Guid, Sound>();
+      }
       OrderedDictionary<Guid, Sound> loadedSounds = new OrderedDictionary<Guid, Sound>();
       foreach (Sound sound in listOfSounds) {
         loadedSounds.Add(sound.id, sound);

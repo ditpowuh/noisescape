@@ -25,23 +25,23 @@ class Program {
   static OrderedDictionary<string, MMDevice> inputDevices = new OrderedDictionary<string, MMDevice>();
   static OrderedDictionary<string, MMDevice> outputDevices = new OrderedDictionary<string, MMDevice>();
 
-  static IWavePlayer currentlyPlayingDevice;
-  static CancellationTokenSource previewCTS;
+  static IWavePlayer? currentlyPlayingDevice;
+  static CancellationTokenSource? previewCTS;
 
   static readonly object soundPlaybackLock = new object();
 
   static List<IWavePlayer> activeSoundPlayers = new List<IWavePlayer>();
   static CancellationTokenSource soundPlaybackCTS = new CancellationTokenSource();
 
-  static WasapiCapture microphoneCapture;
-  static WasapiOut microphoneOutput;
-  static BufferedWaveProvider microphoneBuffer;
+  static WasapiCapture? microphoneCapture;
+  static WasapiOut? microphoneOutput;
+  static BufferedWaveProvider? microphoneBuffer;
 
   static readonly object microphonePassthroughLock = new object();
 
   static bool microphonePassthroughEnabled = false;
 
-  static Settings settings;
+  static Settings settings = new Settings();
 
   static OrderedDictionary<Guid, Sound> sounds = new OrderedDictionary<Guid, Sound>();
 
@@ -63,10 +63,19 @@ class Program {
       window.SetMinSize(1280, 720);
     };
 
-    window.RegisterWebMessageReceivedHandler((object sender, string message) => {
-      JsonObject data = JsonSerializer.Deserialize<JsonObject>(message);
+    window.RegisterWebMessageReceivedHandler((object? sender, string message) => {
+      JsonObject? data = JsonSerializer.Deserialize<JsonObject>(message);
 
-      switch ((string)data["name"]) {
+      if (data == null) {
+        return;
+      }
+
+      string? eventName = data["name"]?.GetValue<string>();
+      if (string.IsNullOrEmpty(eventName)) {
+        return;
+      }
+
+      switch (eventName) {
         case "InitialLoad": {
           var responseData = new {
             name = "InitialLoad",
@@ -85,7 +94,13 @@ class Program {
           break;
         }
         case "SelectInputDevice": {
-          string deviceName = (string)data["device"];
+          string? deviceName = data["device"]?.GetValue<string>();
+          if (string.IsNullOrEmpty(deviceName)) {
+            if (debugMode) {
+              Console.WriteLine("Invalid selection of input device");
+            }
+            return;
+          }
 
           int deviceIndex = 0;
           foreach (KeyValuePair<string, MMDevice> device in inputDevices) {
@@ -104,7 +119,13 @@ class Program {
           break;
         }
         case "SelectOutputDevice": {
-          string deviceName = (string)data["device"];
+          string? deviceName = data["device"]?.GetValue<string>();
+          if (string.IsNullOrEmpty(deviceName)) {
+            if (debugMode) {
+              Console.WriteLine("Invalid selection of output device");
+            }
+            return;
+          }
 
           int deviceIndex = 0;
           foreach (KeyValuePair<string, MMDevice> device in outputDevices) {
@@ -148,15 +169,21 @@ class Program {
         }
         case "PlayPreview": {
           if (data["path"] != null) {
-            PlayPreview((string)data["path"], (float)data["volume"]);
+            string? path = data["path"]?.GetValue<string>();
+            float? volume = data["volume"]?.GetValue<float>();
+            PlayPreview(path, volume);
           }
           if (data["id"] != null) {
-            Sound sound = sounds[(Guid)data["id"]];
-            if (data["volume"] != null) {
-              PlayPreview(sound.filePath, (float)data["volume"]);
-            }
-            else {
-              PlayPreview(sound.filePath, sound.volume);
+            Guid? id = data["id"]?.GetValue<Guid>();
+            if (id != null) {
+              Sound sound = sounds[id.Value];
+              if (data["volume"] != null) {
+                float? volume = data["volume"]?.GetValue<float>();
+                PlayPreview(sound.filePath, volume);
+              }
+              else {
+                PlayPreview(sound.filePath, sound.volume);
+              }
             }
           }
           break;
@@ -169,13 +196,14 @@ class Program {
           var soundData = data["sound"];
 
           Sound sound = new Sound();
-          sound.name = (string)soundData["name"];
-          sound.volume = (float)soundData["volume"];
-          sound.filePath = (string)soundData["path"];
 
-          sound.emoji = (string)soundData["emoji"];
-          if (sound.emoji == "null") {
-            sound.emoji = null;
+          if (soundData != null) {
+            sound.name = soundData["name"]?.GetValue<string>();
+            sound.volume = soundData["volume"]?.GetValue<float>() ?? 1f;
+            sound.filePath = soundData["path"]?.GetValue<string>();
+
+            string? emoji = soundData["emoji"]?.GetValue<string>();
+            sound.emoji = (emoji == "null") ? null : emoji;
           }
 
           sounds.Add(sound.id, sound);
@@ -196,17 +224,29 @@ class Program {
         }
         case "UpdateSound": {
           var soundData = data["sound"];
-          sounds[(Guid)soundData["id"]].name = (string)soundData["name"];
-          sounds[(Guid)soundData["id"]].emoji = (string)soundData["emoji"];
-          sounds[(Guid)soundData["id"]].pinned = (bool)soundData["pinned"];
-          sounds[(Guid)soundData["id"]].volume = (float)soundData["volume"];
 
-          Storage.SaveSounds(sounds);
+          if (soundData != null) {
+            Guid? id = soundData["id"]?.GetValue<Guid>();
+
+            if (id != null) {
+              if (sounds.ContainsKey(id.Value)) {
+                sounds[id.Value].name = soundData["name"]?.GetValue<string>();
+                sounds[id.Value].emoji = soundData["emoji"]?.GetValue<string>();
+                sounds[id.Value].pinned = soundData["pinned"]?.GetValue<bool>() ?? false;
+                sounds[id.Value].volume = soundData["volume"]?.GetValue<float>() ?? 1f;
+
+                Storage.SaveSounds(sounds);
+              }
+            }
+          }
           break;
         }
         case "PlaySound": {
-          Sound sound = sounds[(Guid)data["id"]];
-          PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
+          Guid? id = data["id"]?.GetValue<Guid>();
+          if (id != null) {
+            Sound sound = sounds[id.Value];
+            PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
+          }
           break;
         }
         case "StopAllSounds": {
@@ -214,19 +254,30 @@ class Program {
           break;
         }
         case "RemoveSound": {
-          sounds.Remove((Guid)data["id"]);
-          Storage.SaveSounds(sounds);
+          Guid? id = data["id"]?.GetValue<Guid>();
+          if (id != null) {
+            sounds.Remove(id.Value);
+            Storage.SaveSounds(sounds);
+          }
           break;
         }
         case "ShowSoundAsFile": {
-          Sound sound = sounds[(Guid)data["id"]];
-          Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");
+          Guid? id = data["id"]?.GetValue<Guid>();
+          if (id != null) {
+            Sound sound = sounds[id.Value];
+            if (sound.filePath != null) {
+              Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");
+            }
+          }
           break;
         }
         case "TogglePin": {
-          Sound sound = sounds[(Guid)data["id"]];
-          sound.pinned = !sound.pinned;
-          Storage.SaveSounds(sounds);
+          Guid? id = data["id"]?.GetValue<Guid>();
+          if (id != null) {
+            Sound sound = sounds[id.Value];
+            sound.pinned = !sound.pinned;
+            Storage.SaveSounds(sounds);
+          }
           break;
         }
         default: {
@@ -258,7 +309,10 @@ class Program {
     window.WaitForClose();
   }
 
-  static void PlaySound(string deviceName, string filePath, float volume = 1f) {
+  static void PlaySound(string? deviceName, string? filePath, float volume = 1f) {
+    if (deviceName == null || filePath == null) {
+      return;
+    }
     string deviceID = outputDevices[deviceName].ID;
 
     CancellationToken token;
@@ -360,7 +414,10 @@ class Program {
     }
   }
 
-  static void PlayPreview(string filePath, float volume = 1f) {
+  static void PlayPreview(string? filePath, float? volume = 1f) {
+    if (filePath == null || volume == null) {
+      return;
+    }
     StopPreview();
 
     previewCTS = new CancellationTokenSource();
@@ -377,7 +434,7 @@ class Program {
             currentlyPlayingDevice = outputDevice;
           }
 
-          audioFile.Volume = volume;
+          audioFile.Volume = volume.Value;
           outputDevice.Init(audioFile);
           outputDevice.Play();
 
@@ -397,7 +454,7 @@ class Program {
       }
       finally {
         lock (enumerator) {
-          WasapiOut device = currentlyPlayingDevice as WasapiOut;
+          WasapiOut? device = currentlyPlayingDevice as WasapiOut;
           if (device != null && device == currentlyPlayingDevice) {
             currentlyPlayingDevice = null;
           }
@@ -423,6 +480,10 @@ class Program {
   }
 
   static void StartPassingMicrophone() {
+    if (settings.inputDevice.name == null || settings.outputDevice.name == null) {
+      return;
+    }
+
     lock (microphonePassthroughLock) {
       try {
         if (!inputDevices.ContainsKey(settings.inputDevice.name) || !outputDevices.ContainsKey(settings.outputDevice.name)) {
