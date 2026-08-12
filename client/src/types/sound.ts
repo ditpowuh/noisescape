@@ -4,4 +4,5 @@ export type Sound = {
   emoji: string | null;
   pinned: boolean;
   volume: number;
+  hotkey: string[];
 }

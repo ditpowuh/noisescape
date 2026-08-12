@@ -27,6 +27,8 @@ class Program {
   static OrderedDictionary<string, MMDevice> inputDevices = new OrderedDictionary<string, MMDevice>();
   static OrderedDictionary<string, MMDevice> outputDevices = new OrderedDictionary<string, MMDevice>();
 
+  static OrderedDictionary<string, string> outputDeviceIDs = new OrderedDictionary<string, string>();
+
   static IWavePlayer? currentlyPlayingDevice;
   static CancellationTokenSource? previewCTS;
 
@@ -212,10 +214,18 @@ class Program {
 
             string? emoji = soundData["emoji"]?.GetValue<string>();
             sound.emoji = (emoji == "null") ? null : emoji;
+
+            sound.hotkey = JsonSerializer.Deserialize<List<string>>(soundData["hotkey"]) ?? new List<string>();
           }
 
           sounds.Add(sound.id, sound);
           Storage.SaveSounds(sounds);
+
+          if (sound.hotkey.Count > 0) {
+            Hotkeys.AddHotkey(sound, () => {
+              PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
+            });
+          }
 
           var responseData = new {
             name = "AddSound",
@@ -223,7 +233,8 @@ class Program {
             soundName = sound.name,
             soundEmoji = sound.emoji,
             soundPinned = sound.pinned,
-            soundVolume = sound.volume
+            soundVolume = sound.volume,
+            soundHotkey = sound.hotkey
           };
 
           string dataMessage = JsonSerializer.Serialize(responseData);
@@ -242,6 +253,14 @@ class Program {
                 sounds[id.Value].emoji = soundData["emoji"]?.GetValue<string>();
                 sounds[id.Value].pinned = soundData["pinned"]?.GetValue<bool>() ?? false;
                 sounds[id.Value].volume = soundData["volume"]?.GetValue<float>() ?? 1f;
+                sounds[id.Value].hotkey = JsonSerializer.Deserialize<List<string>>(soundData["hotkey"]) ?? new List<string>();
+
+                Hotkeys.RemoveHotkey(sounds[id.Value]);
+                if (sounds[id.Value].hotkey.Count > 0) {
+                  Hotkeys.AddHotkey(sounds[id.Value], () => {
+                    PlaySound(settings.outputDevice.name, sounds[id.Value].filePath, sounds[id.Value].volume);
+                  });
+                }
 
                 Storage.SaveSounds(sounds);
               }
@@ -264,6 +283,7 @@ class Program {
         case "RemoveSound": {
           Guid? id = data["id"]?.GetValue<Guid>();
           if (id != null) {
+            Hotkeys.RemoveHotkey(sounds[id.Value]);
             sounds.Remove(id.Value);
             Storage.SaveSounds(sounds);
           }
@@ -314,14 +334,28 @@ class Program {
 
     sounds = Storage.LoadSounds();
 
+    Hotkeys.manager.Start();
+    
+    foreach (Guid id in sounds.Keys) {
+      Sound sound = sounds[id];
+      if (sound.hotkey.Count > 0) {
+        Hotkeys.AddHotkey(sound, () => {
+          PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
+        });
+      }
+    }
+
     window.WaitForClose();
+
+    Hotkeys.manager.Stop();
+    Hotkeys.manager.Dispose();
   }
 
   static void PlaySound(string? deviceName, string? filePath, float volume = 1f) {
     if (deviceName == null || filePath == null) {
       return;
     }
-    string deviceID = outputDevices[deviceName].ID;
+    string deviceID = outputDeviceIDs[deviceName];
 
     CancellationToken token;
     lock (soundPlaybackLock) {
@@ -524,9 +558,9 @@ class Program {
         microphoneCapture.StartRecording();
         microphoneOutput.Play();
       }
-      catch (Exception ex) {
+      catch (Exception exception) {
         if (debugMode) {
-          Console.WriteLine($"Error starting passthrough: {ex.Message}");
+          Console.WriteLine($"Error starting microphone passthrough: {exception.Message}");
         }
         StopPassingMicrophone();
       }
@@ -571,6 +605,7 @@ class Program {
     OrderedDictionary<string, MMDevice> outputDevicesNames = new OrderedDictionary<string, MMDevice>();
     foreach (MMDevice device in devices) {
       outputDevicesNames.Add(device.FriendlyName, device);
+      outputDeviceIDs.Add(device.FriendlyName, device.ID);
     }
 
     return outputDevicesNames;
@@ -621,7 +656,6 @@ class Program {
     string[] selectedFiles = window.ShowOpenFile(title, defaultPath, false, filters);
 
     if (selectedFiles != null && selectedFiles.Length > 0) {
-      Console.WriteLine(selectedFiles[0]);
       return selectedFiles[0];
     }
     else {

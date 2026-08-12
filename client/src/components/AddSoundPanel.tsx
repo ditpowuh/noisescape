@@ -8,7 +8,10 @@ import {useSoundboardStore} from "@/stores/SoundboardStore";
 import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react";
 import {AutoTextSize} from "auto-text-size";
 
+import {useRecordHotkeys} from "react-hotkeys-hook";
+
 import CloseIcon from "@/assets/Close.svg?react";
+import DeleteIcon from "@/assets/Delete.svg?react";
 
 import external from "@/lib/external";
 
@@ -20,6 +23,8 @@ export default function AddSoundPanel() {
   const [emoji, setEmoji] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(1);
   const [soundName, setSoundName] = useState<string>("");
+
+  const [keys, {start: startRecordingKeys, stop: stopRecordingKeys, resetKeys, isRecording}] = useRecordHotkeys();
 
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
 
@@ -44,8 +49,21 @@ export default function AddSoundPanel() {
     });
   }
 
+  const changeKeybindRecordingState = () => {
+    if (isRecording) {
+      stopRecordingKeys();
+    }
+    else {
+      startRecordingKeys();
+    }
+  }
+
+  const deleteKeybind = () => {
+    resetKeys();
+  }
+
   const playPreview = () => {
-    if (file === "" || filePath === "") {
+    if (file === "" || filePath === "" || isRecording) {
       return;
     }
     external.sendCommand({
@@ -56,7 +74,7 @@ export default function AddSoundPanel() {
   }
 
   const addSound = () => {
-    if (file === "" || filePath === "" || soundName === "") {
+    if (file === "" || filePath === "" || soundName === "" || isRecording) {
       return;
     }
     external.sendCommand({
@@ -65,7 +83,8 @@ export default function AddSoundPanel() {
         path: filePath,
         name: soundName,
         emoji: emoji,
-        volume: volume
+        volume: volume,
+        hotkey: Array.from(keys)
       }
     });
     external.sendCommand({
@@ -85,6 +104,8 @@ export default function AddSoundPanel() {
       }
     });
   }, []);
+
+  const displayedHotkey = keys.size > 0 ? Array.from(keys).join("+") : "No hotkey set";
 
   return (
     <>
@@ -123,11 +144,31 @@ export default function AddSoundPanel() {
                 <div className={styles.volume}>{volume.toFixed(2)}</div>
               </div>
             </div>
+            <div className={styles.section}>
+              <div className={styles.label}>Hotkey</div>
+              <div>
+                <div className={styles.keybind}>
+                  <div className={styles.text} title={displayedHotkey}>
+                    {displayedHotkey}
+                  </div>
+                  <div className={styles.keybindbuttons}>
+                    {(keys.size > 0 && !isRecording) && (
+                      <button onClick={deleteKeybind}>
+                        <DeleteIcon/>
+                      </button>
+                    )}
+                    <button className={styles.basicbutton} onClick={changeKeybindRecordingState}>
+                      {isRecording ? "Stop recording" : "Record Hotkey"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className={styles.end}>
-              <button className={clsx(styles.actionbutton, (file === "" || filePath === "" || soundName === "") && styles.unavailable)} onClick={addSound}>
+              <button className={clsx(styles.actionbutton, (file === "" || filePath === "" || soundName === "" || isRecording) && styles.unavailable)} onClick={addSound}>
                 Save Sound
               </button>
-              <button className={clsx(styles.actionbutton, (file === "" || filePath === "") && styles.unavailable)} onClick={playPreview}>
+              <button className={clsx(styles.actionbutton, (file === "" || filePath === "" || isRecording) && styles.unavailable)} onClick={playPreview}>
                 Preview
               </button>
             </div>

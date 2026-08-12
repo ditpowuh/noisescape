@@ -93,7 +93,8 @@ export default function Soundboard({theme}: SoundboardProps) {
             name: message.soundName,
             emoji: message.soundEmoji,
             pinned: message.soundPinned,
-            volume: message.soundVolume
+            volume: message.soundVolume,
+            hotkey: message.soundHotkey
           });
           break;
         }

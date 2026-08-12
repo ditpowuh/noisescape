@@ -6,7 +6,10 @@ import {useSoundboardStore} from "@/stores/SoundboardStore";
 
 import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react";
 
+import {useRecordHotkeys} from "react-hotkeys-hook";
+
 import CloseIcon from "@/assets/Close.svg?react";
+import DeleteIcon from "@/assets/Delete.svg?react";
 
 import external from "@/lib/external";
 
@@ -17,6 +20,8 @@ export default function EditSoundPanel() {
   const [updateSound, removeSound] = useSoundboardStore(useShallow((state) => [state.updateSound, state.removeSound]));
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
   const [currentlyEditingSound, setCurrentlyEditingSound, updateCurrentlyEditingSoundAttribute] = useSoundboardStore(useShallow((state) => [state.currentlyEditingSound, state.setCurrentlyEditingSound, state.updateCurrentlyEditingSoundAttribute]));
+
+  const [keys, {start: startRecordingKeys, stop: stopRecordingKeys, resetKeys, isRecording}] = useRecordHotkeys();
 
   const performChange = (change: Partial<Sound>) => {
     updateCurrentlyEditingSoundAttribute(change);
@@ -36,6 +41,22 @@ export default function EditSoundPanel() {
     });
     setCurrentlyEditingSound(null);
     setActivePanel(null);
+  }
+
+  const changeKeybindRecordingState = () => {
+    if (isRecording) {
+      stopRecordingKeys();
+      performChange({hotkey: Array.from(keys)});
+    }
+    else {
+      startRecordingKeys();
+      performChange({hotkey: []});
+    }
+  }
+
+  const deleteKeybind = () => {
+    resetKeys();
+    performChange({hotkey: []});
   }
 
   const playPreview = () => {
@@ -80,6 +101,8 @@ export default function EditSoundPanel() {
     return null;
   }
 
+  const displayedHotkey = isRecording ? (keys.size > 0 ? Array.from(keys).join("+") : "No hotkey set") : (currentlyEditingSound.sound.hotkey.length > 0 ? currentlyEditingSound.sound.hotkey.join("+") : "No hotkey set");
+
   return (
     <>
       <div className={styles.scrim}></div>
@@ -110,6 +133,26 @@ export default function EditSoundPanel() {
               <button className={clsx(styles.actionbutton, styles.danger)} onClick={processRemoveSound}>
                 Remove Sound
               </button>
+            </div>
+            <div className={styles.section}>
+              <div className={styles.label}>Keybind</div>
+              <div>
+                <div className={styles.keybind}>
+                  <div className={styles.text} title={displayedHotkey}>
+                    {displayedHotkey}
+                  </div>
+                  <div className={styles.keybindbuttons}>
+                    {(currentlyEditingSound.sound.hotkey.length > 0 && !isRecording) && (
+                      <button onClick={deleteKeybind}>
+                        <DeleteIcon/>
+                      </button>
+                    )}
+                    <button className={styles.basicbutton} onClick={changeKeybindRecordingState}>
+                      {isRecording ? "Stop recording" : "Record Hotkey"}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className={styles.end}>
               <button className={clsx(styles.actionbutton, currentlyEditingSound.sound.name === "" && styles.unavailable)} onClick={processSaveSound}>
