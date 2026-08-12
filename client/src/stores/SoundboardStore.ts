@@ -3,12 +3,12 @@ import {create} from "zustand";
 import type {Sound} from "@/types/sound";
 
 interface SoundboardState {
-  sounds: Sound[];
-  currentlyEditingSound: {
-    sound: Sound;
-    index: number;
+  readonly sounds: Readonly<Sound>[];
+  readonly currentlyEditingSound: {
+    readonly sound: Readonly<Sound>;
+    readonly index: number;
   } | null;
-  activePanel: "AddSound" | "EditSound" | null;
+  readonly activePanel: "AddSound" | "EditSound" | null;
   setSounds: (sounds: Sound[]) => void;
   addSound: (sound: Sound) => void;
   updateSound: (sound: Sound, id: string) => void;
