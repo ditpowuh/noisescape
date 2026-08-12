@@ -10,6 +10,8 @@ import {AutoTextSize} from "auto-text-size";
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
 
+import {motion} from "motion/react";
+
 import CloseIcon from "@/assets/Close.svg?react";
 import DeleteIcon from "@/assets/Delete.svg?react";
 
@@ -23,6 +25,7 @@ export default function AddSoundPanel() {
   const [emoji, setEmoji] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(1);
   const [soundName, setSoundName] = useState<string>("");
+  const [closing, setClosing] = useState<boolean>(false);
 
   const [keys, {start: startRecordingKeys, stop: stopRecordingKeys, resetKeys, isRecording}] = useRecordHotkeys();
 
@@ -40,6 +43,7 @@ export default function AddSoundPanel() {
     external.sendCommand({
       name: "StopPreview"
     });
+    setClosing(true);
     setActivePanel(null);
   }
 
@@ -105,12 +109,23 @@ export default function AddSoundPanel() {
     });
   }, []);
 
+  if (closing) {
+    return (
+      <>
+        <motion.div className={styles.scrim} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: 0.5}}></motion.div>
+        <motion.div className={styles.panel} initial={{x: "-50%", y: "-150%"}} animate={{x: "-50%", y: "-50%"}} exit={{x: "-50%", y: "100%"}}>
+          <div className={styles.byebye}>👋</div>
+        </motion.div>
+      </>
+    );
+  }
+
   const displayedHotkey = keys.size > 0 ? Array.from(keys).join("+") : "No hotkey set";
 
   return (
     <>
-      <div className={styles.scrim}></div>
-      <div className={styles.panel}>
+      <motion.div className={styles.scrim} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: 0.5}}></motion.div>
+      <motion.div className={styles.panel} initial={{x: "-50%", y: "-150%"}} animate={{x: "-50%", y: "-50%"}} exit={{x: "-50%", y: "100%"}}>
         <div className={styles.start}>
           <div>Add a sound</div>
           <div>
@@ -186,7 +201,7 @@ export default function AddSoundPanel() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }

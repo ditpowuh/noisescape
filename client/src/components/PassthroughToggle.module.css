@@ -1,3 +1,7 @@
+.text {
+  margin-bottom: 1.5em;
+}
+
 .button {
   background: #ffffff;
   display: flex;
@@ -9,4 +13,10 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.button > span {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }

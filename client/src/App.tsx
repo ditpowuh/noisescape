@@ -10,6 +10,8 @@ import {useSoundboardStore} from "@/stores/SoundboardStore";
 
 import Wave from "react-wavify";
 
+import {AnimatePresence} from "motion/react";
+
 import AddSoundPanel from "@/components/AddSoundPanel";
 import EditSoundPanel from "@/components/EditSoundPanel";
 import MainButtons from "@/components/MainButtons";
@@ -55,12 +57,14 @@ export default function App() {
         <Soundboard theme={theme}/>
       </div>
       <MainButtons/>
-      {activePanel === "AddSound" && (
-        <AddSoundPanel/>
-      )}
-      {activePanel === "EditSound" && (
-        <EditSoundPanel/>
-      )}
+      <AnimatePresence mode="wait">
+        {activePanel === "AddSound" && (
+          <AddSoundPanel/>
+        )}
+        {activePanel === "EditSound" && (
+          <EditSoundPanel/>
+        )}
+      </AnimatePresence>
     </>
   );
 }

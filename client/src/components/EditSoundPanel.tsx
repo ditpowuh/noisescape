@@ -8,6 +8,8 @@ import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
 
+import {motion} from "motion/react";
+
 import CloseIcon from "@/assets/Close.svg?react";
 import DeleteIcon from "@/assets/Delete.svg?react";
 
@@ -98,15 +100,22 @@ export default function EditSoundPanel() {
   }
 
   if (currentlyEditingSound === null) {
-    return null;
+    return (
+      <>
+        <motion.div className={styles.scrim} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: 0.5}}></motion.div>
+        <motion.div className={styles.panel} initial={{x: "-50%", y: "-150%"}} animate={{x: "-50%", y: "-50%"}} exit={{x: "-50%", y: "100%"}}>
+          <div className={styles.byebye}>👋</div>
+        </motion.div>
+      </>
+    );
   }
 
-  const displayedHotkey = isRecording ? (keys.size > 0 ? Array.from(keys).join("+") : "No hotkey set") : (currentlyEditingSound.sound.hotkey.length > 0 ? currentlyEditingSound.sound.hotkey.join("+") : "No hotkey set");
+  const displayedHotkey = isRecording ? (keys.size > 0 ? Array.from(keys).join("+") : "No hotkey set") : (currentlyEditingSound?.sound.hotkey.length > 0 ? currentlyEditingSound.sound.hotkey.join("+") : "No hotkey set");
 
   return (
     <>
-      <div className={styles.scrim}></div>
-      <div className={styles.panel}>
+      <motion.div className={styles.scrim} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: 0.5}}></motion.div>
+      <motion.div className={styles.panel} initial={{x: "-50%", y: "-150%"}} animate={{x: "-50%", y: "-50%"}} exit={{x: "-50%", y: "100%"}}>
         <div className={styles.start}>
           <div>Edit sound</div>
           <div>
@@ -176,7 +185,7 @@ export default function EditSoundPanel() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }
