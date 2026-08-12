@@ -26,11 +26,11 @@ export default defineConfig({
   base: "./",
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
+      "@": path.resolve(import.meta.dirname, "./src")
     }
   },
   build: {
-    outDir: path.resolve(__dirname, "../src/Resources/wwwroot"),
+    outDir: path.resolve(import.meta.dirname, "../src/Resources/wwwroot"),
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000
   }
