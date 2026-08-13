@@ -1,5 +1,5 @@
 import styles from "./SoundTrigger.module.css";
-import {useState} from "react";
+import {useState, useEffect, useRef} from "react";
 import clsx from "clsx";
 
 import PinIcon from "@/assets/Pin.svg?react";
@@ -16,6 +16,8 @@ interface SoundTriggerProps extends React.ComponentProps<"div"> {
 export default function SoundTrigger({name, guid, pinned, emoji, ...elementProps}: SoundTriggerProps) {
   const [triggeredEffect, setTriggeredEffect] = useState<boolean>(false);
 
+  const triggeredEffectTimerRef = useRef<number | null>(null);
+
   const triggerPreview = () => {
     external.sendCommand({
       name: "PlayPreview",
@@ -29,10 +31,21 @@ export default function SoundTrigger({name, guid, pinned, emoji, ...elementProps
       id: guid
     });
     setTriggeredEffect(true);
-    setTimeout(() => {
+    if (triggeredEffectTimerRef.current) {
+      clearTimeout(triggeredEffectTimerRef.current);
+    }
+    triggeredEffectTimerRef.current = setTimeout(() => {
       setTriggeredEffect(false);
     }, 500);
   }
+
+  useEffect(() => {
+    return () => {
+      if (triggeredEffectTimerRef.current) {
+        clearTimeout(triggeredEffectTimerRef.current);
+      }
+    }
+  }, []);
 
   return (
     <div className={styles.container}>
