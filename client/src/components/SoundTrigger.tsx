@@ -11,9 +11,10 @@ interface SoundTriggerProps extends React.ComponentProps<"div"> {
   guid: string;
   pinned: boolean;
   emoji: string | null;
+  fileFound: boolean;
 }
 
-export default function SoundTrigger({name, guid, pinned, emoji, ...elementProps}: SoundTriggerProps) {
+export default function SoundTrigger({name, guid, pinned, emoji, fileFound, ...elementProps}: SoundTriggerProps) {
   const [triggeredEffect, setTriggeredEffect] = useState<boolean>(false);
 
   const triggeredEffectTimerRef = useRef<number | null>(null);
@@ -39,6 +40,13 @@ export default function SoundTrigger({name, guid, pinned, emoji, ...elementProps
     }, 500);
   }
 
+  const relocateFile = () => {
+    external.sendCommand({
+      name: "RelocateSound",
+      id: guid
+    });
+  }
+
   useEffect(() => {
     return () => {
       if (triggeredEffectTimerRef.current) {
@@ -53,6 +61,11 @@ export default function SoundTrigger({name, guid, pinned, emoji, ...elementProps
         <div className={styles.emoji}>{emoji}</div>
         <div className={styles.name} title={name}>{name}</div>
       </div>
+      {!fileFound && (
+        <div className={styles.filenotfound} onClick={relocateFile}>
+          <div>Unable to find file - Click to locate file</div>
+        </div>
+      )}
       {pinned && (
         <div className={styles.pin}>
           <PinIcon/>

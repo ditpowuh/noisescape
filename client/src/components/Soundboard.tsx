@@ -24,6 +24,7 @@ export default function Soundboard({theme}: SoundboardProps) {
   const [contextSound, setContextSound] = useState<Sound | null>(null);
 
   const [sounds, setSounds, addSound, updateSound] = useSoundboardStore(useShallow((state) => [state.sounds, state.setSounds, state.addSound, state.updateSound]));
+  const [setSoundFound] = useSoundboardStore(useShallow((state) => [state.setSoundFound]));
   const [setCurrentlyEditingSound] = useSoundboardStore(useShallow((state) => [state.setCurrentlyEditingSound]));
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
 
@@ -60,6 +61,9 @@ export default function Soundboard({theme}: SoundboardProps) {
         break;
       }
       case "Edit": {
+        if (props.sound.found === false) {
+          return;
+        }
         setCurrentlyEditingSound({
           sound: props.sound,
           index: props.index
@@ -71,6 +75,9 @@ export default function Soundboard({theme}: SoundboardProps) {
         break;
       }
       case "Location": {
+        if (props.sound.found === false) {
+          return;
+        }
         external.sendCommand({
           name: "ShowSoundAsFile",
           id: props.sound.id
@@ -94,8 +101,13 @@ export default function Soundboard({theme}: SoundboardProps) {
             emoji: message.soundEmoji,
             pinned: message.soundPinned,
             volume: message.soundVolume,
-            hotkey: message.soundHotkey
+            hotkey: message.soundHotkey,
+            found: true
           });
+          break;
+        }
+        case "RelocateSound": {
+          setSoundFound(message.id);
           break;
         }
       }
@@ -106,8 +118,8 @@ export default function Soundboard({theme}: SoundboardProps) {
     <>
       <div className={styles.soundboard}>
         {
-          sortedSounds.map((sound, index) => (
-            <SoundTrigger key={`${sound.id}~${index}`} name={sound.name} emoji={sound.emoji} pinned={sound.pinned} guid={sound.id} onContextMenu={(event) => handleContextMenu(event, sound, index)}/>
+          sortedSounds.map((sound: Sound, index: number) => (
+            <SoundTrigger key={`${sound.id}~${index}`} name={sound.name} emoji={sound.emoji} pinned={sound.pinned} guid={sound.id} fileFound={sound.found} onContextMenu={(event) => handleContextMenu(event, sound, index)}/>
           ))
         }
       </div>

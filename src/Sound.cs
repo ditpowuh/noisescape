@@ -25,12 +25,15 @@ class Sound {
   [JsonPropertyName("id")]
   public Guid id;
 
+  [JsonPropertyName("found")]
+  public bool fileFoundAtPath = false;
+
   public Sound() {
     id = Guid.NewGuid();
   }
 
   [JsonConstructor]
-  public Sound(Guid id, string filePath, string name, string emoji, bool pinned, float volume, List<string> hotkey) {
+  public Sound(Guid id, string filePath, string name, string emoji, bool pinned, float volume, List<string> hotkey, bool fileFoundAtPath) {
     this.id = id;
     this.filePath = filePath;
     this.name = name;
@@ -38,6 +41,8 @@ class Sound {
     this.pinned = pinned;
     this.volume = volume;
     this.hotkey = hotkey;
+
+    this.fileFoundAtPath = File.Exists(filePath);
   }
 
 }

@@ -5,4 +5,5 @@ export type Sound = {
   pinned: boolean;
   volume: number;
   hotkey: string[];
+  found: boolean;
 }

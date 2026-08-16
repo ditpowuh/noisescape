@@ -216,6 +216,8 @@ class Program {
             sound.emoji = (emoji == "null") ? null : emoji;
 
             sound.hotkey = JsonSerializer.Deserialize<List<string>>(soundData["hotkey"]) ?? new List<string>();
+
+            sound.fileFoundAtPath = true;
           }
 
           sounds.Add(sound.id, sound);
@@ -289,11 +291,30 @@ class Program {
           }
           break;
         }
+        case "RelocateSound": {
+          Guid? id = data["id"]?.GetValue<Guid>();
+          if (id != null) {
+            string? filePath = OpenFileSelectDialog(window, "Select a sound");
+            if (filePath != null) {
+              sounds[id.Value].filePath = filePath;
+              sounds[id.Value].fileFoundAtPath = true;
+
+              var responseData = new {
+                name = "RelocateSound",
+                id = id.Value
+              };
+
+              string dataMessage = JsonSerializer.Serialize(responseData);
+              window.SendWebMessage(dataMessage);
+            }
+          }
+          break;
+        }
         case "ShowSoundAsFile": {
           Guid? id = data["id"]?.GetValue<Guid>();
           if (id != null) {
             Sound sound = sounds[id.Value];
-            if (sound.filePath != null) {
+            if (sound.filePath != null && sound.fileFoundAtPath == true) {
               Process.Start("explorer.exe", $"/select,\"{sound.filePath}\"");
             }
           }
@@ -333,9 +354,10 @@ class Program {
     }
 
     sounds = Storage.LoadSounds();
+    Storage.SaveSounds(sounds);
 
     Hotkeys.manager.Start();
-    
+
     foreach (Guid id in sounds.Keys) {
       Sound sound = sounds[id];
       if (sound.hotkey.Count > 0) {
