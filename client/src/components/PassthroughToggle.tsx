@@ -34,7 +34,7 @@ export default function PassthroughToggle() {
       <div className={styles.text}>Send microphone input to virtual cable</div>
       <button className={styles.button} title={passthrough ? "Enabled" : "Disabled"} onClick={toggle} style={{color: passthrough ? "#00de00" : "#de0000"}}>
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span key={passthrough ? "on" : "off"} initial={{opacity: 0, scale: 0.75}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.75}} transition={{duration: 0.25}}>
+          <motion.span key={passthrough ? "on" : "off"} initial={{opacity: 0, scale: 0}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0}} transition={{duration: 0.25}}>
             {passthrough ? <MicrophoneOnIcon/> : <MicrophoneOffIcon/>}
           </motion.span>
         </AnimatePresence>
