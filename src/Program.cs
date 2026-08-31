@@ -341,8 +341,8 @@ class Program {
 
     window.Load(appUrl);
 
-    inputDevices = GetInputDevices();
-    outputDevices = GetOutputDevices();
+    SetInputDevices();
+    SetOutputDevices();
 
     Settings? loadedSettings = Storage.LoadSettings();
     if (loadedSettings == null) {
@@ -610,27 +610,26 @@ class Program {
     }
   }
 
-  static OrderedDictionary<string, MMDevice> GetInputDevices() {
+  static void SetInputDevices() {
     MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
 
-    OrderedDictionary<string, MMDevice> inputDevicesNames = new OrderedDictionary<string, MMDevice>();
-    foreach (MMDevice device in devices) {
-      inputDevicesNames.Add(device.FriendlyName, device);
-    }
+    inputDevices.Clear();
 
-    return inputDevicesNames;
+    foreach (MMDevice device in devices) {
+      inputDevices.Add(device.FriendlyName, device);
+    }
   }
 
-  static OrderedDictionary<string, MMDevice> GetOutputDevices() {
+  static void SetOutputDevices() {
     MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
 
-    OrderedDictionary<string, MMDevice> outputDevicesNames = new OrderedDictionary<string, MMDevice>();
+    outputDevices.Clear();
+    outputDeviceIDs.Clear();
+
     foreach (MMDevice device in devices) {
-      outputDevicesNames.Add(device.FriendlyName, device);
+      outputDevices.Add(device.FriendlyName, device);
       outputDeviceIDs.Add(device.FriendlyName, device.ID);
     }
-
-    return outputDevicesNames;
   }
 
   static void VerifyDevices() {
