@@ -68,7 +68,7 @@ class Program {
     window.SetIconFile(debugMode ? "../client/public/Icon.ico" : "Icon.ico");
 
     window.WindowCreated += (sender, e) => {
-      window.SetTitle("Noisescape (Soundboard)");
+      window.SetTitle("Noisescape - Loading...");
       window.SetMinSize(1280, 720);
     };
 
