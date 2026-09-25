@@ -1,0 +1,58 @@
+.titlebar {
+  display: flex;
+  position: fixed;
+  height: 4em;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  color: #000000;
+  z-index: 100;
+  trasition: box-shadow 0.25s;
+  -webkit-app-region: drag;
+}
+
+.titlebar.shadow {
+  box-shadow: 0 0 2em rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  font-size: 1.25em;
+  margin: 0 1rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5em;
+  margin: 0 1rem;
+}
+
+.buttons > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75em;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.125s;
+  -webkit-app-region: none;
+}
+
+.buttons > div:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .titlebar {
+    background: #222222;
+    color: #ffffff;
+  }
+
+  .titlebar.shadow {
+    box-shadow: 0 0 2em rgba(0, 0, 0, 0.5);
+  }
+
+  .buttons > div:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

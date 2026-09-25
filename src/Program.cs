@@ -60,6 +60,9 @@ class Program {
 
     PhotinoWindow window = new PhotinoWindow();
 
+    window.SetUseOsDefaultLocation(false);
+    window.SetUseOsDefaultSize(false);
+
     window.SetNotificationsEnabled(false);
     window.SetTitle(string.Empty);
     window.SetSize(1600, 900);
@@ -67,9 +70,14 @@ class Program {
     window.SetContextMenuEnabled(false);
     window.SetIconFile(debugMode ? "../client/public/Icon.ico" : "Icon.ico");
 
+    window.SetChromeless(true);
+    window.SetBrowserControlInitParameters("--enable-features=msWebView2EnableDraggableRegions");
+
     window.WindowCreated += (sender, e) => {
       window.SetTitle("Noisescape - Loading...");
       window.SetMinSize(1280, 720);
+      window.SetResizable(true);
+      WindowChrome.Install(window);
     };
 
     window.RegisterWebMessageReceivedHandler((object? sender, string message) => {
@@ -327,6 +335,18 @@ class Program {
             sound.pinned = !sound.pinned;
             Storage.SaveSounds(sounds);
           }
+          break;
+        }
+        case "CloseWindow": {
+          window.Close();
+          break;
+        }
+        case "ResizeWindow": {
+          WindowChrome.ToggleMaximize(window);
+          break;
+        }
+        case "MinimiseWindow": {
+          window.SetMinimized(true);
           break;
         }
         default: {

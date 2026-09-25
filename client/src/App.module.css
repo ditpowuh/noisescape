@@ -3,5 +3,6 @@
 }
 
 .wave {
+  padding: 1em 0;
   transform: rotate(180deg) translateY(15%);
 }

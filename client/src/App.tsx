@@ -12,6 +12,7 @@ import Wave from "react-wavify";
 
 import {AnimatePresence} from "motion/react";
 
+import TitleBar from "@/components/TitleBar";
 import AddSoundPanel from "@/components/AddSoundPanel";
 import EditSoundPanel from "@/components/EditSoundPanel";
 import MainButtons from "@/components/MainButtons";
@@ -48,9 +49,10 @@ export default function App() {
 
   return (
     <>
+      <TitleBar/>
       <div className={styles.content}>
         <div className={styles.wave}>
-          <Wave fill={theme === "dark" ? "#222222" : "#ffffff"} paused={false} options={{height: 50, amplitude: 25, speed: 0.125, points: 3}}/>
+          <Wave fill={theme === "dark" ? "#1a1a1a" : "#f6f6f6"} paused={false} options={{height: 0, amplitude: 25, speed: 0.125, points: 3}}/>
         </div>
         <DeviceSelector inputDevices={inputDevices} outputDevices={outputDevices}/>
         <PassthroughToggle/>
