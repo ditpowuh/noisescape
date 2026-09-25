@@ -59,6 +59,7 @@ class Program {
     string appUrl = debugMode ? "http://localhost:5173" : $"{baseUrl}/index.html";
 
     PhotinoWindow window = new PhotinoWindow();
+    bool windowCreated = false;
 
     window.SetUseOsDefaultLocation(false);
     window.SetUseOsDefaultSize(false);
@@ -78,6 +79,37 @@ class Program {
       window.SetMinSize(1280, 720);
       window.SetResizable(true);
       WindowChrome.Install(window);
+      if (settings.maximised) {
+        WindowChrome.SetMaximised(window, true);
+      }
+      windowCreated = true;
+    };
+
+    window.WindowSizeChanged += (sender, size) => {
+      if (WindowChrome.IsMaximised(window)) {
+        return;
+      }
+      settings.windowSize[0] = size.Width;
+      settings.windowSize[1] = size.Height;
+    };
+
+    window.WindowMaximized += (sender, e) => {
+      if (!windowCreated) {
+        return;
+      }
+      settings.maximised = true;
+    };
+
+    window.WindowRestored += (sender, e) => {
+      if (!windowCreated) {
+        return;
+      }
+      settings.maximised = false;
+    };
+
+    window.WindowClosing += (sender, e) => {
+      Storage.SaveSettings(settings);
+      return false;
     };
 
     window.RegisterWebMessageReceivedHandler((object? sender, string message) => {
@@ -342,7 +374,7 @@ class Program {
           break;
         }
         case "ResizeWindow": {
-          WindowChrome.ToggleMaximize(window);
+          WindowChrome.ToggleMaximise(window);
           break;
         }
         case "MinimiseWindow": {
@@ -359,8 +391,6 @@ class Program {
       }
     });
 
-    window.Load(appUrl);
-
     SetInputDevices();
     SetOutputDevices();
 
@@ -371,7 +401,11 @@ class Program {
     else {
       settings = loadedSettings;
       VerifyDevices();
+      window.SetSize(settings.windowSize[0], settings.windowSize[1]);
+      window.Center();
     }
+
+    window.Load(appUrl);
 
     sounds = Storage.LoadSounds();
     Storage.SaveSounds(sounds);
@@ -388,6 +422,8 @@ class Program {
     }
 
     window.WaitForClose();
+
+    Storage.SaveSettings(settings);
 
     Hotkeys.manager.Stop();
     Hotkeys.manager.Dispose();

@@ -80,9 +80,16 @@ static class WindowChrome {
   [DllImport("user32.dll")]
   static extern bool ShowWindow(IntPtr hwnd, int cmdShow);
 
-  public static void ToggleMaximize(PhotinoWindow window) {
-    IntPtr hwnd = window.WindowHandle;
-    ShowWindow(hwnd, IsZoomed(hwnd) ? SW_RESTORE : SW_MAXIMIZE);
+  public static bool IsMaximised(PhotinoWindow window) {
+    return IsZoomed(window.WindowHandle);
+  }
+
+  public static void SetMaximised(PhotinoWindow window, bool maximised) {
+    ShowWindow(window.WindowHandle, maximised ? SW_MAXIMIZE : SW_RESTORE);
+  }
+
+  public static void ToggleMaximise(PhotinoWindow window) {
+    SetMaximized(window, !IsMaximised(window));
   }
 
   public static void Install(PhotinoWindow window) {

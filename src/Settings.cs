@@ -25,6 +25,12 @@ class Settings {
   [JsonPropertyName("virtual")]
   public Device outputDevice = new Device();
 
+  [JsonPropertyName("maximised")]
+  public bool maximised = false;
+
+  [JsonPropertyName("windowsize")]
+  public int[] windowSize = {1600, 900};
+
   [JsonConstructor]
   public Settings() {}
 
