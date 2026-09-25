@@ -161,7 +161,7 @@
   justify-content: space-between;
   height: 4em;
   padding: 1em;
-  border: 0.25em solid #333333;
+  border: 0.25em solid #dddddd;
   border-radius: 0.75em;
 }
 
@@ -227,5 +227,9 @@
   .danger {
     background: #990000;
     color: #ffffff;
+  }
+
+  .keybind {
+    border: 0.25em solid #333333;
   }
 }
