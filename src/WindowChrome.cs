@@ -89,7 +89,7 @@ static class WindowChrome {
   }
 
   public static void ToggleMaximise(PhotinoWindow window) {
-    SetMaximized(window, !IsMaximised(window));
+    SetMaximised(window, !IsMaximised(window));
   }
 
   public static void Install(PhotinoWindow window) {
