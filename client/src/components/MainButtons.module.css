@@ -25,3 +25,21 @@
   cursor: pointer;
   pointer-events: auto;
 }
+
+.right .note {
+  text-align: right;
+  right: 5.5rem;
+}
+
+.note {
+  position: fixed;
+  font-size: 0.75em;
+  bottom: 1.5rem;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  .note {
+    color: rgba(255, 255, 255, 0.25);
+  }
+}

@@ -1,5 +1,8 @@
 import styles from "./MainButtons.module.css";
+import {useState} from "react";
 import {useShallow} from "zustand/react/shallow";
+
+import {motion, AnimatePresence} from "motion/react";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
 
@@ -10,6 +13,7 @@ import external from "@/lib/external";
 
 export default function MainButtons() {
   const [setActivePanel] = useSoundboardStore(useShallow((state) => [state.setActivePanel]));
+  const [hoveringRightButton, setHoveringRightButton] = useState<boolean>(false);
 
   const openAddSoundPanel = () => {
     external.sendCommand({
@@ -18,10 +22,17 @@ export default function MainButtons() {
     setActivePanel("AddSound");
   }
 
-  const stopAllSounds = () => {
-    external.sendCommand({
-      name: "StopAllSounds"
-    });
+  const stopSounds = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (event.detail === 1) {
+      external.sendCommand({
+        name: "StopAllSounds"
+      });
+    }
+    if (event.detail === 2) {
+      external.sendCommand({
+        name: "StopPreview"
+      });
+    }
   }
 
   return (
@@ -30,7 +41,17 @@ export default function MainButtons() {
         <button className={styles.button} onClick={openAddSoundPanel} title="Add Sound"><PlusIcon/></button>
       </div>
       <div className={styles.right}>
-        <button className={styles.button} onClick={stopAllSounds} title="Stop All Sounds"><StopIcon/></button>
+        <button className={styles.button} onMouseEnter={() => setHoveringRightButton(true)} onMouseLeave={() => setHoveringRightButton(false)} onClick={stopSounds}>
+          <StopIcon/>
+        </button>
+        <AnimatePresence mode="wait">
+          {hoveringRightButton && (
+            <motion.div className={styles.note} initial={{opacity: 0, y: "100%"}} animate={{opacity: 1, y: 0}} exit={{opacity: 0, y: "100%"}}>
+              <div>Stop all sounds - Single click</div>
+              <div>Stop all sounds and preview - Double click</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
