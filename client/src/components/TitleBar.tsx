@@ -33,7 +33,8 @@ export default function TitleBar() {
 
   return (
     <div className={clsx(styles.titlebar, activePanel !== null && styles.shadow)}>
-      <div>
+      <div className={styles.title}>
+        <div className={styles.icon}><img src="/Icon.ico" width={32} height={32}/></div>
         <div className={styles.name}>Noisescape</div>
       </div>
       <div className={styles.buttons}>

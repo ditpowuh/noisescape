@@ -16,9 +16,21 @@
   box-shadow: 0 0 2em rgba(0, 0, 0, 0.1);
 }
 
-.name {
-  font-size: 1.25em;
+.title {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 0 1rem;
+}
+
+.name {
+  display: inline-block;
+  font-size: 1.25em;
 }
 
 .buttons {
