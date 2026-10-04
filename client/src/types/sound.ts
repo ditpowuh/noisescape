@@ -6,4 +6,4 @@ export type Sound = {
   volume: number;
   hotkey: string[];
   found: boolean;
-}
+};
