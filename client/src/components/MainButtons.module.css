@@ -26,6 +26,11 @@
   pointer-events: auto;
 }
 
+.left .note {
+  text-align: left;
+  left: 5.5rem;
+}
+
 .right .note {
   text-align: right;
   right: 5.5rem;
