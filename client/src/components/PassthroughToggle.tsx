@@ -22,7 +22,7 @@ export default function PassthroughToggle() {
     external.receiveCommand((message) => {
       switch (message.name) {
         case "InitialLoad": {
-          setPassthrough(message.passthrough);
+          setPassthrough(message.passthrough as boolean);
           break;
         }
       }

@@ -91,11 +91,11 @@ export default function Soundboard({theme}: SoundboardProps) {
     external.receiveCommand((message) => {
       switch (message.name) {
         case "InitialLoad": {
-          setSounds(message.sounds);
+          setSounds(message.sounds as Sound[]);
           break;
         }
         case "AddSound": {
-          addSound({
+          const addedSound = {
             id: message.soundGuid,
             name: message.soundName,
             emoji: message.soundEmoji,
@@ -103,11 +103,12 @@ export default function Soundboard({theme}: SoundboardProps) {
             volume: message.soundVolume,
             hotkey: message.soundHotkey,
             found: true
-          });
+          } as Sound;
+          addSound(addedSound);
           break;
         }
         case "RelocateSound": {
-          setSoundFound(message.id);
+          setSoundFound(message.id as Sound["id"]);
           break;
         }
       }

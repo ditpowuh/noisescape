@@ -37,10 +37,14 @@ export default function App() {
     external.receiveCommand((message) => {
       switch (message.name) {
         case "InitialLoad": {
-          setInputDevices(message.inputDevices);
-          setOutputDevices(message.outputDevices);
-          setSelectedInput(message.inputDevices[message.inputIndex] ?? "");
-          setSelectedOutput(message.outputDevices[message.outputIndex] ?? "");
+          const inputDevices = message.inputDevices as string[];
+          const outputDevices = message.outputDevices as string[];
+
+          setInputDevices(inputDevices);
+          setOutputDevices(outputDevices);
+          setSelectedInput(inputDevices[message.inputIndex as number] ?? "");
+          setSelectedOutput(outputDevices[message.outputIndex as number] ?? "");
+
           break;
         }
       }

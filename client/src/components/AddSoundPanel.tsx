@@ -101,8 +101,8 @@ export default function AddSoundPanel() {
     external.receiveCommand((message) => {
       switch (message.name) {
         case "SelectedFile": {
-          setFile(message.fileName);
-          setFilePath(message.filePath);
+          setFile(message.fileName as string);
+          setFilePath(message.filePath as string);
           break;
         }
       }
