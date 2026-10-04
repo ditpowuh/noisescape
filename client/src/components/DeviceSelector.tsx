@@ -1,34 +1,19 @@
 import styles from "./DeviceSelector.module.css";
-import {useEffect, useRef} from "react";
 
 import external from "@/lib/external";
 
 interface DeviceSelectorProps {
   inputDevices: string[];
   outputDevices: string[];
+  selectedInput: string;
+  selectedOutput: string;
+  setSelectedInput: (device: string) => void;
+  setSelectedOutput: (device: string) => void;
 }
 
-export default function DeviceSelector({inputDevices, outputDevices}: DeviceSelectorProps) {
-  const inputSelectRef = useRef<HTMLSelectElement>(null);
-  const outputSelectRef = useRef<HTMLSelectElement>(null);
-
-  useEffect(() => {
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "InitialLoad": {
-          if (inputSelectRef.current !== null) {
-            inputSelectRef.current.value = message.inputDevices[message.inputIndex];
-          }
-          if (outputSelectRef.current !== null) {
-            outputSelectRef.current.value = message.outputDevices[message.outputIndex];
-          }
-          break;
-        }
-      }
-    });
-  }, []);
-
+export default function DeviceSelector({inputDevices, outputDevices, selectedInput, selectedOutput, setSelectedInput, setSelectedOutput}: DeviceSelectorProps) {
   const selectInputDevice = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedInput(event.target.value);
     external.sendCommand({
       name: "SelectInputDevice",
       device: event.target.value
@@ -36,6 +21,7 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
   }
 
   const selectOutputDevice = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedOutput(event.target.value);
     external.sendCommand({
       name: "SelectOutputDevice",
       device: event.target.value
@@ -46,7 +32,7 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
     <div className={styles.section}>
       <div>
         <div>Select your input microphone:</div>
-        <select ref={inputSelectRef} className={styles.selector} onChange={selectInputDevice}>
+        <select value={selectedInput} className={styles.selector} onChange={selectInputDevice}>
           {
             inputDevices.map((inputDevice, index) => (
               <option key={`${inputDevice}~${index}`}>{inputDevice}</option>
@@ -56,7 +42,7 @@ export default function DeviceSelector({inputDevices, outputDevices}: DeviceSele
       </div>
       <div>
         <div>Select your virtual cable:</div>
-        <select ref={outputSelectRef} className={styles.selector} onChange={selectOutputDevice}>
+        <select value={selectedOutput} className={styles.selector} onChange={selectOutputDevice}>
           {
             outputDevices.map((outputDevice, index) => (
               <option key={`${outputDevice}~${index}`}>{outputDevice}</option>

@@ -30,6 +30,8 @@ export default function App() {
 
   const [inputDevices, setInputDevices] = useState<string[]>([]);
   const [outputDevices, setOutputDevices] = useState<string[]>([]);
+  const [selectedInput, setSelectedInput] = useState<string>("");
+  const [selectedOutput, setSelectedOutput] = useState<string>("");
 
   useEffect(() => {
     external.receiveCommand((message) => {
@@ -37,6 +39,8 @@ export default function App() {
         case "InitialLoad": {
           setInputDevices(message.inputDevices);
           setOutputDevices(message.outputDevices);
+          setSelectedInput(message.inputDevices[message.inputIndex] ?? "");
+          setSelectedOutput(message.outputDevices[message.outputIndex] ?? "");
           break;
         }
       }
@@ -54,7 +58,7 @@ export default function App() {
         <div className={styles.wave}>
           <Wave fill={theme === "dark" ? "#1a1a1a" : "#f6f6f6"} paused={false} options={{height: 0, amplitude: 25, speed: 0.125, points: 3}}/>
         </div>
-        <DeviceSelector inputDevices={inputDevices} outputDevices={outputDevices}/>
+        <DeviceSelector inputDevices={inputDevices} outputDevices={outputDevices} selectedInput={selectedInput} selectedOutput={selectedOutput} setSelectedInput={setSelectedInput} setSelectedOutput={setSelectedOutput}/>
         <PassthroughToggle/>
         <Soundboard theme={theme}/>
       </div>
