@@ -37,8 +37,8 @@ class Program {
   static List<IWavePlayer> activeSoundPlayers = new List<IWavePlayer>();
   static CancellationTokenSource soundPlaybackCTS = new CancellationTokenSource();
 
-  static WasapiCapture? microphoneCapture;
-  static WasapiOut? microphoneOutput;
+  static WasapiRecorder? microphoneCapture;
+  static WasapiPlayer? microphoneOutput;
   static BufferedWaveProvider? microphoneBuffer;
 
   static readonly object microphonePassthroughLock = new object();
@@ -446,7 +446,7 @@ class Program {
       try {
         audioFile = new AudioFileReader(filePath);
         MMDevice targetDevice = enumerator.GetDevice(deviceID);
-        outputDevice = new WasapiOut(targetDevice, AudioClientShareMode.Shared, true, 200);
+        outputDevice = new WasapiPlayerBuilder().WithDevice(targetDevice).WithLatency(200).Build();
 
         lock (soundPlaybackLock) {
           if (token.IsCancellationRequested) {
@@ -483,7 +483,7 @@ class Program {
       AudioFileReader? audioFile = null;
       try {
         audioFile = new AudioFileReader(filePath);
-        outputDevice = new WasapiOut();
+        outputDevice = new WasapiPlayerBuilder().Build();
 
         lock (soundPlaybackLock) {
           if (token.IsCancellationRequested) {
@@ -546,7 +546,7 @@ class Program {
     Task.Run(() => {
       try {
         using (var audioFile = new AudioFileReader(filePath))
-        using (var outputDevice = new WasapiOut()) {
+        using (var outputDevice = new WasapiPlayerBuilder().Build()) {
           lock (enumerator) {
             if (token.IsCancellationRequested) {
               return;
@@ -574,7 +574,7 @@ class Program {
       }
       finally {
         lock (enumerator) {
-          WasapiOut? device = currentlyPlayingDevice as WasapiOut;
+          WasapiPlayer? device = currentlyPlayingDevice as WasapiPlayer;
           if (device != null && device == currentlyPlayingDevice) {
             currentlyPlayingDevice = null;
           }
@@ -613,15 +613,14 @@ class Program {
         MMDevice inputDevice = inputDevices[settings.inputDevice.name];
         MMDevice outputDevice = outputDevices[settings.outputDevice.name];
 
-        microphoneCapture = new WasapiCapture(inputDevice);
+        microphoneCapture = new WasapiRecorderBuilder().WithDevice(inputDevice).Build();
 
-        microphoneBuffer = new BufferedWaveProvider(microphoneCapture.WaveFormat) {
-          DiscardOnBufferOverflow = true,
-          BufferDuration = TimeSpan.FromMilliseconds(500)
+        microphoneBuffer = new BufferedWaveProvider(microphoneCapture.WaveFormat, TimeSpan.FromMilliseconds(500)) {
+          DiscardOnBufferOverflow = true
         };
 
-        microphoneCapture.DataAvailable += (s, e) => {
-          microphoneBuffer?.AddSamples(e.Buffer, 0, e.BytesRecorded);
+        microphoneCapture.DataAvailable += (buffer, _, _, _) => {
+          microphoneBuffer?.AddSamples(buffer);
         };
 
         microphoneCapture.RecordingStopped += (s, e) => {
@@ -630,7 +629,7 @@ class Program {
           }
         };
 
-        microphoneOutput = new WasapiOut(outputDevice, AudioClientShareMode.Shared, true, 50);
+        microphoneOutput = new WasapiPlayerBuilder().WithDevice(outputDevice).WithLatency(50).Build();
         microphoneOutput.Init(microphoneBuffer);
 
         microphoneCapture.StartRecording();
