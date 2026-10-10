@@ -2,9 +2,9 @@ import styles from "./Soundboard.module.css";
 import {useState, useEffect, useMemo} from "react";
 import {useShallow} from "zustand/react/shallow";
 
-import {useSoundboardStore} from "@/stores/SoundboardStore";
-
 import {Menu as ContextMenu, Item as ContextItem, useContextMenu, type ItemParams} from "react-contexify";
+
+import {useSoundboardStore} from "@/stores/SoundboardStore";
 
 import SoundTrigger from "@/components/SoundTrigger";
 
