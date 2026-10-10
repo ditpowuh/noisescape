@@ -8,7 +8,7 @@ interface SoundboardState {
     readonly sound: Readonly<Sound>;
     readonly index: number;
   } | null;
-  readonly activePanel: "AddSound" | "EditSound" | null;
+  readonly activePanel: "AddSound" | "EditSound" | "StopSoundHotkey" | null;
   setSounds: (sounds: Sound[]) => void;
   addSound: (sound: Sound) => void;
   updateSound: (sound: Sound, id: string) => void;
@@ -16,7 +16,7 @@ interface SoundboardState {
   setSoundFound: (id: string) => void;
   setCurrentlyEditingSound: (currentlyEditingSound: {sound: Sound, index: number} | null) => void;
   updateCurrentlyEditingSoundAttribute: (changes: Partial<Sound>) => void;
-  setActivePanel: (panel: "AddSound" | "EditSound" | null) => void;
+  setActivePanel: (panel: "AddSound" | "EditSound" | "StopSoundHotkey" | null) => void;
 }
 
 export const useSoundboardStore = create<SoundboardState>((set) => ({

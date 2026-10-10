@@ -15,6 +15,7 @@ import {AnimatePresence} from "motion/react";
 import TitleBar from "@/components/TitleBar";
 import AddSoundPanel from "@/components/AddSoundPanel";
 import EditSoundPanel from "@/components/EditSoundPanel";
+import StopSoundHotkeyPanel from "@/components/StopSoundHotkeyPanel";
 import MainButtons from "@/components/MainButtons";
 import DeviceSelector from "@/components/DeviceSelector";
 import PassthroughToggle from "@/components/PassthroughToggle";
@@ -66,13 +67,16 @@ export default function App() {
         <PassthroughToggle/>
         <Soundboard theme={theme}/>
       </div>
-      <MainButtons/>
+      <MainButtons theme={theme}/>
       <AnimatePresence mode="wait">
         {activePanel === "AddSound" && (
           <AddSoundPanel/>
         )}
         {activePanel === "EditSound" && (
           <EditSoundPanel/>
+        )}
+        {activePanel === "StopSoundHotkey" && (
+          <StopSoundHotkeyPanel/>
         )}
       </AnimatePresence>
     </>
