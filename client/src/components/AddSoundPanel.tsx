@@ -109,6 +109,19 @@ export default function AddSoundPanel() {
     });
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isRecording && !closing) {
+        closePanel();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isRecording, closing]);
+
   if (closing) {
     return (
       <>

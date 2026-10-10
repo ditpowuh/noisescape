@@ -1,4 +1,5 @@
 import styles from "./SoundPanel.module.css";
+import {useEffect} from "react";
 import {useShallow} from "zustand/react/shallow";
 import clsx from "clsx";
 
@@ -44,6 +45,19 @@ export default function EditSoundPanel() {
     setCurrentlyEditingSound(null);
     setActivePanel(null);
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isRecording && currentlyEditingSound !== null) {
+        closePanel();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isRecording, currentlyEditingSound]);
 
   const changeKeybindRecordingState = () => {
     if (isRecording) {

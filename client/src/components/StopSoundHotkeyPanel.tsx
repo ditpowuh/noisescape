@@ -60,6 +60,19 @@ export default function StopSoundHotkeyPanel() {
   }
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isRecording && !closing) {
+        closePanel();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isRecording, closing]);
+
+  useEffect(() => {
     external.sendCommand({
       name: "GetStopSoundsHotkey"
     });
