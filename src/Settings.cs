@@ -31,6 +31,9 @@ class Settings {
   [JsonPropertyName("windowsize")]
   public int[] windowSize = {1600, 900};
 
+  [JsonPropertyName("stopsoundshotkey")]
+  public List<string> stopSoundsHotkey = new List<string>();
+
   [JsonConstructor]
   public Settings() {}
 

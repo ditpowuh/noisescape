@@ -369,6 +369,30 @@ class Program {
           }
           break;
         }
+        case "SetStopSoundsHotkey": {
+          settings.stopSoundsHotkey = data["hotkey"]?.Deserialize<List<string>>() ?? new List<string>();
+
+          Hotkeys.RemoveStopSoundsHotkey();
+          if (settings.stopSoundsHotkey.Count > 0) {
+            Hotkeys.AddStopSoundsHotkey(settings.stopSoundsHotkey, () => {
+              StopAllSounds();
+            });
+          }
+          Storage.SaveSettings(settings);
+          break;
+        }
+        case "GetStopSoundsHotkey": {
+          var responseData = new {
+            name = "GetStopSoundsHotkey",
+            hotkey = settings.stopSoundsHotkey
+          };
+
+          string dataMessage = JsonSerializer.Serialize(responseData, new JsonSerializerOptions {
+            IncludeFields = true
+          });
+          window.SendWebMessage(dataMessage);
+          break;
+        }
         case "CloseWindow": {
           window.Close();
           break;
@@ -419,6 +443,11 @@ class Program {
           PlaySound(settings.outputDevice.name, sound.filePath, sound.volume);
         });
       }
+    }
+    if (settings.stopSoundsHotkey.Count > 0) {
+      Hotkeys.AddStopSoundsHotkey(settings.stopSoundsHotkey, () => {
+        StopAllSounds();
+      });
     }
 
     window.WaitForClose();

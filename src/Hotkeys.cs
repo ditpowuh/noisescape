@@ -21,4 +21,15 @@ static class Hotkeys {
     manager.Unregister(sound.id.ToString());
   }
 
+  public static void AddStopSoundsHotkey(List<string> hotkey, Action stopSoundsAction) {
+    manager.Register("StopAllSounds", () => {
+      stopSoundsAction();
+      return Task.CompletedTask;
+    }, string.Join("+", hotkey));
+  }
+
+  public static void RemoveStopSoundsHotkey() {
+    manager.Unregister("StopAllSounds");
+  }
+
 }
