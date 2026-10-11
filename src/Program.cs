@@ -136,9 +136,7 @@ class Program {
             sounds = sounds.Values.Cast<Sound>().ToList()
           };
 
-          string dataMessage = JsonSerializer.Serialize(responseData, new JsonSerializerOptions {
-            IncludeFields = true
-          });
+          string dataMessage = JsonSerializer.Serialize(responseData, Storage.defaultSerializerOptions);
           window.SendWebMessage(dataMessage);
           window.SetTitle("Noisescape");
           break;
@@ -387,9 +385,7 @@ class Program {
             hotkey = settings.stopSoundsHotkey
           };
 
-          string dataMessage = JsonSerializer.Serialize(responseData, new JsonSerializerOptions {
-            IncludeFields = true
-          });
+          string dataMessage = JsonSerializer.Serialize(responseData, Storage.defaultSerializerOptions);
           window.SendWebMessage(dataMessage);
           break;
         }
