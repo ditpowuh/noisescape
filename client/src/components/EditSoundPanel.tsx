@@ -109,6 +109,9 @@ export default function EditSoundPanel() {
       name: "RemoveSound",
       id: currentlyEditingSound.sound.id
     });
+    external.sendCommand({
+      name: "StopPreview"
+    });
     removeSound(currentlyEditingSound.sound.id);
     closePanel();
   }
