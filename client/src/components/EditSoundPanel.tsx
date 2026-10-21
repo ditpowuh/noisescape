@@ -76,7 +76,7 @@ export default function EditSoundPanel() {
   }
 
   const playPreview = () => {
-    if (currentlyEditingSound === null) {
+    if (currentlyEditingSound === null || isRecording) {
       return;
     }
     external.sendCommand({
@@ -90,7 +90,7 @@ export default function EditSoundPanel() {
     if (currentlyEditingSound === null) {
       return;
     }
-    if (currentlyEditingSound.sound.name === "") {
+    if (currentlyEditingSound.sound.name === "" || isRecording) {
       return;
     }
     external.sendCommand({
@@ -178,10 +178,10 @@ export default function EditSoundPanel() {
               </div>
             </div>
             <div className={styles.end}>
-              <button className={clsx(styles.actionbutton, currentlyEditingSound.sound.name === "" && styles.unavailable)} onClick={processSaveSound}>
+              <button className={clsx(styles.actionbutton, (currentlyEditingSound.sound.name === "" || isRecording) && styles.unavailable)} onClick={processSaveSound}>
                 Save Sound
               </button>
-              <button className={styles.actionbutton} onClick={playPreview}>
+              <button className={clsx(styles.actionbutton, isRecording && styles.unavailable)} onClick={playPreview}>
                 Preview
               </button>
             </div>
