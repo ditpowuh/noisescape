@@ -4,6 +4,7 @@ import {useShallow} from "zustand/react/shallow";
 import clsx from "clsx";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
+import useReceiveCommand from "@/hooks/useReceiveCommand";
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
 
@@ -72,18 +73,18 @@ export default function StopSoundHotkeyPanel() {
     }
   }, [isRecording, closing]);
 
+  useReceiveCommand((message) => {
+    switch (message.name) {
+      case "GetStopSoundsHotkey": {
+        setStopHotkey((message.hotkey as string[] | undefined) ?? []);
+        break;
+      }
+    }
+  });
+
   useEffect(() => {
     external.sendCommand({
       name: "GetStopSoundsHotkey"
-    });
-
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "GetStopSoundsHotkey": {
-          setStopHotkey((message.hotkey as string[] | undefined) ?? []);
-          break;
-        }
-      }
     });
   }, []);
 

@@ -1,10 +1,11 @@
 import styles from "./Soundboard.module.css";
-import {useState, useEffect, useMemo} from "react";
+import {useState, useMemo} from "react";
 import {useShallow} from "zustand/react/shallow";
 
 import {Menu as ContextMenu, Item as ContextItem, useContextMenu, type ItemParams} from "react-contexify";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
+import useReceiveCommand from "@/hooks/useReceiveCommand";
 
 import SoundTrigger from "@/components/SoundTrigger";
 
@@ -87,33 +88,31 @@ export default function Soundboard({theme}: SoundboardProps) {
     }
   }
 
-  useEffect(() => {
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "InitialLoad": {
-          setSounds(message.sounds as Sound[]);
-          break;
-        }
-        case "AddSound": {
-          const addedSound = {
-            id: message.soundGuid,
-            name: message.soundName,
-            emoji: message.soundEmoji,
-            pinned: message.soundPinned,
-            volume: message.soundVolume,
-            hotkey: message.soundHotkey,
-            found: true
-          } as Sound;
-          addSound(addedSound);
-          break;
-        }
-        case "RelocateSound": {
-          setSoundFound(message.id as Sound["id"]);
-          break;
-        }
+  useReceiveCommand((message) => {
+    switch (message.name) {
+      case "InitialLoad": {
+        setSounds(message.sounds as Sound[]);
+        break;
       }
-    });
-  }, []);
+      case "AddSound": {
+        const addedSound = {
+          id: message.soundGuid,
+          name: message.soundName,
+          emoji: message.soundEmoji,
+          pinned: message.soundPinned,
+          volume: message.soundVolume,
+          hotkey: message.soundHotkey,
+          found: true
+        } as Sound;
+        addSound(addedSound);
+        break;
+      }
+      case "RelocateSound": {
+        setSoundFound(message.id as Sound["id"]);
+        break;
+      }
+    }
+  });
 
   return (
     <>

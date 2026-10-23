@@ -7,6 +7,7 @@ import "react-contexify/dist/ReactContexify.css";
 import "./global.css";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
+import useReceiveCommand from "@/hooks/useReceiveCommand";
 
 import Wave from "react-wavify";
 
@@ -34,23 +35,23 @@ export default function App() {
   const [selectedInput, setSelectedInput] = useState<string>("");
   const [selectedOutput, setSelectedOutput] = useState<string>("");
 
-  useEffect(() => {
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "InitialLoad": {
-          const inputDevices = message.inputDevices as string[];
-          const outputDevices = message.outputDevices as string[];
+  useReceiveCommand((message) => {
+    switch (message.name) {
+      case "InitialLoad": {
+        const inputDevices = message.inputDevices as string[];
+        const outputDevices = message.outputDevices as string[];
 
-          setInputDevices(inputDevices);
-          setOutputDevices(outputDevices);
-          setSelectedInput(inputDevices[message.inputIndex as number] ?? "");
-          setSelectedOutput(outputDevices[message.outputIndex as number] ?? "");
+        setInputDevices(inputDevices);
+        setOutputDevices(outputDevices);
+        setSelectedInput(inputDevices[message.inputIndex as number] ?? "");
+        setSelectedOutput(outputDevices[message.outputIndex as number] ?? "");
 
-          break;
-        }
+        break;
       }
-    });
+    }
+  });
 
+  useEffect(() => {
     external.sendCommand({
       name: "InitialLoad"
     });

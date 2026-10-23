@@ -1,7 +1,9 @@
 import styles from "./PassthroughToggle.module.css";
-import {useState, useEffect} from "react";
+import {useState} from "react";
 
 import {AnimatePresence, motion} from "motion/react";
+
+import useReceiveCommand from "@/hooks/useReceiveCommand";
 
 import MicrophoneOnIcon from "@/assets/MicrophoneOn.svg?react";
 import MicrophoneOffIcon from "@/assets/MicrophoneOff.svg?react";
@@ -18,16 +20,14 @@ export default function PassthroughToggle() {
     setPassthrough((state) => !state);
   }
 
-  useEffect(() => {
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "InitialLoad": {
-          setPassthrough(message.passthrough as boolean);
-          break;
-        }
+  useReceiveCommand((message) => {
+    switch (message.name) {
+      case "InitialLoad": {
+        setPassthrough(message.passthrough as boolean);
+        break;
       }
-    });
-  }, []);
+    }
+  });
 
   return (
     <div>

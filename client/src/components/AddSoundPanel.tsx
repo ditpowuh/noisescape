@@ -4,6 +4,7 @@ import {useShallow} from "zustand/react/shallow";
 import clsx from "clsx";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
+import useReceiveCommand from "@/hooks/useReceiveCommand";
 
 import EmojiPicker, {Theme, EmojiStyle, SuggestionMode, type EmojiClickData} from "emoji-picker-react";
 import {AutoTextSize} from "auto-text-size";
@@ -95,17 +96,15 @@ export default function AddSoundPanel() {
     closePanel();
   }
 
-  useEffect(() => {
-    external.receiveCommand((message) => {
-      switch (message.name) {
-        case "SelectedFile": {
-          setFile(message.fileName as string);
-          setFilePath(message.filePath as string);
-          break;
-        }
+  useReceiveCommand((message) => {
+    switch (message.name) {
+      case "SelectedFile": {
+        setFile(message.fileName as string);
+        setFilePath(message.filePath as string);
+        break;
       }
-    });
-  }, []);
+    }
+  });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

@@ -1,21 +1,37 @@
-import type {Message} from "@/types/external";
+import type {Message, ReceivingFunction} from "@/types/external";
+
+const receivingFunctions = new Set<ReceivingFunction>();
+let nativeReceiverRegistered = false;
 
 function sendCommand(message: Message) {
   return window.external.sendMessage(JSON.stringify(message));
 }
 
-function receiveCommand(receivingFunction: (message: Message) => void) {
-  const wrapperFunction = (initialMessage: string) => {
-    try {
-      const parsedMessage: Message = JSON.parse(initialMessage);
-      receivingFunction(parsedMessage);
-    }
-    catch (error) {
-      console.error("Failed to parse incoming message:", error);
-    }
+function receiveCommand(receivingFunction: ReceivingFunction) {
+  if (!nativeReceiverRegistered) {
+    window.external.receiveMessage((initialMessage: string) => {
+      let parsedMessage: Message;
+
+      try {
+        parsedMessage = JSON.parse(initialMessage);
+      }
+      catch (error) {
+        console.error("Failed to parse incoming message:", error);
+        return;
+      }
+
+      receivingFunctions.forEach((handler) => {
+        return handler(parsedMessage);
+      });
+    });
+    nativeReceiverRegistered = true;
   }
 
-  return window.external.receiveMessage(wrapperFunction);
+  receivingFunctions.add(receivingFunction);
+
+  return () => {
+    receivingFunctions.delete(receivingFunction);
+  }
 }
 
 export default {
