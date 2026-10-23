@@ -35,7 +35,6 @@ export default defineConfig([
       "css-modules-next/no-undefined-class": "warn",
       "react/no-unescaped-entities": "off",
       "react-hooks/exhaustive-deps": "off",
-      "@next/next/no-img-element": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", {
         "argsIgnorePattern": "^_$",

@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
 
-import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react";
+import EmojiPicker, {Theme, EmojiStyle, SuggestionMode, type EmojiClickData} from "emoji-picker-react";
 import {AutoTextSize} from "auto-text-size";
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
@@ -16,8 +16,6 @@ import CloseIcon from "@/assets/Close.svg?react";
 import DeleteIcon from "@/assets/Delete.svg?react";
 
 import external from "@/lib/external";
-
-import type {EmojiClickData} from "emoji-picker-react";
 
 export default function AddSoundPanel() {
   const [file, setFile] = useState<string>("");

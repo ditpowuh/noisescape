@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
 
-import EmojiPicker, {Theme, EmojiStyle, SuggestionMode} from "emoji-picker-react";
+import EmojiPicker, {Theme, EmojiStyle, SuggestionMode, type EmojiClickData} from "emoji-picker-react";
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
 
@@ -17,7 +17,6 @@ import DeleteIcon from "@/assets/Delete.svg?react";
 import external from "@/lib/external";
 
 import type {Sound} from "@/types/sound";
-import type {EmojiClickData} from "emoji-picker-react";
 
 export default function EditSoundPanel() {
   const [updateSound, removeSound] = useSoundboardStore(useShallow((state) => [state.updateSound, state.removeSound]));
