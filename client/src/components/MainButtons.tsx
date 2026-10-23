@@ -93,6 +93,9 @@ export default function MainButtons({theme}: MainButtonsProps) {
         <ContextItem id="SetHotkey" onClick={() => setActivePanel("StopSoundHotkey")}>
           Set hotkey
         </ContextItem>
+        <ContextItem id="StopSounds" onClick={() => external.sendCommand({name: "StopAllSounds"})}>
+          Stop all sounds
+        </ContextItem>
       </ContextMenu>
       <ContextMenu className={styles.contextmenu} id="AddSoundButton" animation={false} theme={theme}>
         <ContextItem id="AddSound" onClick={openAddSoundPanel}>
