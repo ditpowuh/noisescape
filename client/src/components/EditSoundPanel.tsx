@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 import {useSoundboardStore} from "@/stores/SoundboardStore";
 
-import EmojiPicker, {Theme, EmojiStyle, SuggestionMode, type EmojiClickData} from "emoji-picker-react";
+import EmojiPicker, {type EmojiClickData} from "emoji-picker-react";
 
 import {useRecordHotkeys} from "react-hotkeys-hook";
 
@@ -190,7 +190,7 @@ export default function EditSoundPanel() {
           </div>
           <div>
             <div className={styles.label}>Emoji</div>
-            <EmojiPicker height={300} width="100%" autoFocusSearch={false} theme={Theme.AUTO} emojiStyle={EmojiStyle.NATIVE} skinTonesDisabled={true} previewConfig={{showPreview: false}} suggestedEmojisMode={SuggestionMode.RECENT} onEmojiClick={selectEmoji}/>
+            <EmojiPicker height={300} width="100%" autoFocusSearch={false} theme="auto" emojiStyle="native" skinTonesDisabled={true} previewConfig={{showPreview: false}} suggestedEmojisMode="recent" onEmojiClick={selectEmoji}/>
             <div className={styles.emojidisplay}>
               {currentlyEditingSound.sound.emoji !== null && (
                 <button className={styles.basicbutton} onClick={removeEmoji}>Remove</button>
